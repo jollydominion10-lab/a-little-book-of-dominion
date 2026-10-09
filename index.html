@@ -2,476 +2,456 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#faf5ed">
-  <title>A Little Book of Dominion</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#faf3e9">
+<title>A Little Book of Dominion</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Parisienne&display=swap" rel="stylesheet">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --cream: #faf5ed;
-      --paper: #fffdf9;
-      --pink: #e8c6c6;
-      --rose: #b77c83;
-      --brown: #59483f;
-      --muted: #98877c;
-      --gold: #c5a56a;
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--cream);
-      color: var(--brown);
-      font-family: "DM Sans", sans-serif;
-    }
-
-    button, a { -webkit-tap-highlight-color: transparent; }
-
-    .topline {
-      height: 4px;
-      background: linear-gradient(90deg, var(--pink), var(--gold), var(--pink));
-    }
-
-    header {
-      max-width: 1100px;
-      margin: auto;
-      padding: 24px 22px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      border-bottom: 1px solid #e9dfd2;
-    }
-
-    .brand {
-      font-family: "Playfair Display", serif;
-      font-size: 18px;
-      font-style: italic;
-    }
-
-    .edition {
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 9px;
-      padding: 18px 12px;
-    }
-
-    nav a {
-      color: var(--brown);
-      text-decoration: none;
-      font-size: 12px;
-      padding: 9px 13px;
-      border-radius: 30px;
-      transition: background .25s, color .25s;
-    }
-
-    nav a:hover {
-      background: var(--pink);
-      color: #fff;
-    }
-
-    .hero {
-      max-width: 850px;
-      margin: 38px auto 0;
-      padding: 50px 24px 70px;
-      text-align: center;
-      animation: appear 1.2s ease both;
-    }
-
-    .eyebrow {
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--rose);
-    }
-
-    h1 {
-      font-family: "Playfair Display", serif;
-      font-weight: 400;
-      font-size: clamp(43px, 9vw, 76px);
-      line-height: 1.12;
-      margin: 22px 0 15px;
-    }
-
-    h1 em {
-      color: var(--rose);
-      font-weight: 400;
-    }
-
-    .subtitle {
-      max-width: 450px;
-      margin: 0 auto;
-      font-family: "Playfair Display", serif;
-      font-size: 17px;
-      line-height: 1.8;
-      color: var(--muted);
-    }
-
-    .flower {
-      color: var(--gold);
-      font-size: 26px;
-      margin: 27px 0;
-      animation: float 4s ease-in-out infinite;
-    }
-
-    .countdown-card {
-      max-width: 490px;
-      margin: 0 auto;
-      padding: 27px 20px;
-      background: rgba(255, 253, 249, .8);
-      border: 1px solid #eadfd2;
-      border-radius: 4px;
-      box-shadow: 0 12px 38px rgba(100, 75, 55, .05);
-    }
-
-    .countdown-label {
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    #countdown {
-      display: flex;
-      justify-content: center;
-      gap: clamp(12px, 4vw, 30px);
-      margin-top: 22px;
-    }
-
-    .time-number {
-      font-family: "Playfair Display", serif;
-      font-size: 34px;
-      color: var(--rose);
-    }
-
-    .time-unit {
-      display: block;
-      margin-top: 4px;
-      font-size: 9px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .primary-button {
-      display: inline-block;
-      margin-top: 28px;
-      padding: 14px 23px;
-      background: var(--brown);
-      border: 1px solid var(--brown);
-      color: white;
-      text-decoration: none;
-      font-size: 12px;
-      letter-spacing: .5px;
-      border-radius: 30px;
-      transition: .25s;
-    }
-
-    .primary-button:hover {
-      background: var(--rose);
-      border-color: var(--rose);
-      transform: translateY(-2px);
-    }
-
-    .section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 65px 24px;
-      text-align: center;
-      scroll-margin-top: 20px;
-    }
-
-    .section-tag {
-      color: var(--rose);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    h2 {
-      font-family: "Playfair Display", serif;
-      font-size: clamp(30px, 6vw, 43px);
-      font-weight: 400;
-      margin: 14px 0;
-    }
-
-    .section-intro {
-      color: var(--muted);
-      max-width: 470px;
-      margin: 0 auto 30px;
-      font-size: 13px;
-      line-height: 1.9;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      text-align: left;
-    }
-
-    .feature {
-      min-height: 155px;
-      padding: 23px;
-      background: var(--paper);
-      border: 1px solid #eadfd2;
-      text-decoration: none;
-      color: var(--brown);
-      transition: transform .25s, box-shadow .25s;
-    }
-
-    .feature:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px #59483f0d;
-    }
-
-    .feature-symbol {
-      font-size: 23px;
-    }
-
-    .feature h3 {
-      font-family: "Playfair Display", serif;
-      font-weight: 400;
-      font-size: 20px;
-      margin: 15px 0 7px;
-    }
-
-    .feature p {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.7;
-      margin: 0;
-    }
-
-    .note {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 30px 24px;
-      background: #f2e5e0;
-      font-family: "Playfair Display", serif;
-      font-style: italic;
-      font-size: 19px;
-      line-height: 1.8;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px 15px 40px;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 1px;
-      line-height: 2;
-    }
-
-    .hidden { display: none !important; }
-
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-7px); }
-    }
-
-    @media (max-width: 520px) {
-      header { padding: 19px 15px; }
-      .brand { font-size: 16px; }
-      .edition { font-size: 8px; letter-spacing: 1px; }
-      .hero { margin-top: 12px; padding-top: 45px; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .feature { min-height: 130px; }
-      nav { gap: 2px; }
-      nav a { padding: 9px 10px; font-size: 11px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        scroll-behavior: auto !important;
-        transition-duration: .01ms !important;
-      }
-    }
-  </style>
+<style>
+:root {
+  --cream: #faf3e9;
+  --paper: #fffaf2;
+  --pink: #f0d1d0;
+  --rose: #b96f7b;
+  --brown: #57392f;
+  --gold: #c3a16c;
+  --muted: #91786d;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--brown);
+  font-family: "DM Sans", sans-serif;
+}
+a { color: inherit; }
+.topline {
+  height: 4px;
+  background: linear-gradient(90deg, #d99da5, #d9bd8d, #d99da5);
+}
+header {
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid #e9d8c7;
+  background: var(--paper);
+}
+.brand {
+  font: italic 20px "Playfair Display", serif;
+}
+.brand span { color: var(--rose); }
+.edition {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-align: right;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-around;
+  background: #fffaf2f2;
+  border-bottom: 1px solid #e8d9cd;
+  backdrop-filter: blur(8px);
+}
+nav a {
+  padding: 13px 5px;
+  font-size: 11px;
+  text-decoration: none;
+  text-align: center;
+}
+nav a:hover { color: var(--rose); }
+.hero {
+  position: relative;
+  padding: 30px 17px 32px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 0% 10%, #eed5c7 0, transparent 40%),
+    radial-gradient(ellipse at 100% 90%, #e8c8c6 0, transparent 36%),
+    var(--cream);
+}
+.kicker {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h1 {
+  margin: 10px 0 5px;
+  text-align: center;
+  font: 400 clamp(36px, 10vw, 55px)/1.08 "Playfair Display", serif;
+}
+h1 em {
+  display: block;
+  color: var(--rose);
+  font: 56px/1.15 "Parisienne", cursive;
+}
+.intro {
+  max-width: 330px;
+  margin: 8px auto 18px;
+  text-align: center;
+  font: 15px/1.7 "Playfair Display", serif;
+}
+.collage {
+  position: relative;
+  max-width: 390px;
+  margin: 18px auto 20px;
+  min-height: 285px;
+}
+.photo {
+  position: absolute;
+  padding: 7px 7px 25px;
+  background: #fffdf8;
+  box-shadow: 0 7px 18px #60453625;
+  border: 1px solid #eadfce;
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-main {
+  width: 66%;
+  height: 250px;
+  left: 17%;
+  top: 12px;
+  transform: rotate(-3deg);
+}
+.photo-side {
+  width: 36%;
+  height: 128px;
+  left: 0;
+  top: 110px;
+  transform: rotate(-9deg);
+}
+.photo-right {
+  width: 34%;
+  height: 120px;
+  right: 0;
+  top: 26px;
+  transform: rotate(8deg);
+}
+.tape {
+  position: absolute;
+  z-index: 2;
+  width: 65px;
+  height: 19px;
+  background: #e9b9b5bb;
+  left: 41%;
+  top: 3px;
+  transform: rotate(-7deg);
+}
+.sticker {
+  position: absolute;
+  color: var(--rose);
+  font-size: 27px;
+}
+.sticker.one { left: 3%; top: 32px; transform: rotate(-15deg); }
+.sticker.two { right: 4%; bottom: 8px; transform: rotate(13deg); }
+.paper-note {
+  max-width: 330px;
+  margin: 0 auto;
+  padding: 18px 13px;
+  text-align: center;
+  background: #f4dedd;
+  border: 1px solid #e8c8c3;
+  transform: rotate(-1deg);
+}
+.paper-note .label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+#countdown {
+  display: flex;
+  justify-content: center;
+  gap: clamp(10px, 4vw, 22px);
+  margin: 14px 0 9px;
+}
+.time-number {
+  display: block;
+  font: 29px "Playfair Display", serif;
+}
+.time-unit {
+  display: block;
+  margin-top: 4px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+#countdown-message {
+  font: 12px "Playfair Display", serif;
+  margin: 8px 0 0;
+}
+.button {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 23px auto 0;
+  padding: 13px 21px;
+  border-radius: 28px;
+  background: var(--rose);
+  color: white;
+  text-decoration: none;
+  font: 14px "Playfair Display", serif;
+  text-align: center;
+  box-shadow: 0 5px 12px #b96f7b26;
+}
+.section {
+  padding: 44px 20px;
+  scroll-margin-top: 55px;
+}
+.section-label {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+h2 {
+  margin: 9px 0 12px;
+  font: 400 34px/1.2 "Playfair Display", serif;
+}
+.description {
+  color: var(--muted);
+  font: 14px/1.9 "Playfair Display", serif;
+}
+.memory-collage {
+  position: relative;
+  height: 180px;
+  margin: 24px 0;
+  background: #f1dfd1;
+  overflow: hidden;
+}
+.memory-collage img {
+  position: absolute;
+  width: 42%;
+  height: 145px;
+  padding: 6px 6px 20px;
+  object-fit: cover;
+  background: white;
+  box-shadow: 0 4px 12px #60453620;
+}
+.memory-collage img:nth-child(1) {
+  left: 5%; top: 17px; transform: rotate(-8deg);
+}
+.memory-collage img:nth-child(2) {
+  left: 30%; top: 6px; transform: rotate(4deg);
+}
+.memory-collage img:nth-child(3) {
+  right: 3%; top: 20px; transform: rotate(8deg);
+}
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.feature {
+  min-height: 130px;
+  padding: 16px 13px;
+  border: 1px solid #e5d1c3;
+  border-radius: 10px;
+  text-decoration: none;
+  background: #fffaf480;
+}
+.feature-icon {
+  color: var(--rose);
+  font-size: 23px;
+}
+.feature h3 {
+  font: 19px "Playfair Display", serif;
+  margin: 12px 0 6px;
+}
+.feature p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.quote {
+  margin: 24px 0;
+  padding: 23px 18px;
+  text-align: center;
+  background: #f1dcda;
+  font: italic 18px/1.8 "Playfair Display", serif;
+}
+footer {
+  padding: 28px 15px;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 1px;
+  line-height: 2;
+  color: var(--muted);
+  border-top: 1px solid #e8d9cd;
+}
+.hidden { display: none !important; }
+@media (min-width: 650px) {
+  body { max-width: 760px; margin: 0 auto; box-shadow: 0 0 35px #5c44310b; }
+  .hero { padding: 42px 35px; }
+  .collage { min-height: 330px; }
+  .photo-main { height: 295px; }
+  .photo-side, .photo-right { height: 145px; }
+  .section { padding: 55px 35px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+</style>
 </head>
 
 <body>
-  <div class="topline"></div>
+<div class="topline"></div>
+<header>
+  <div class="brand">A Little Book of <span>Dominion</span></div>
+  <div class="edition">The birthday<br>edition · 2026</div>
+</header>
 
-  <header>
-    <div class="brand">A Little Book of Dominion</div>
-    <div class="edition">The birthday edition · 2026</div>
-  </header>
+<nav aria-label="Main navigation">
+  <a href="#home">♡ Home</a>
+  <a href="#memories">Memories</a>
+  <a href="#stories">Stories</a>
+  <a href="#wishes">Wishes</a>
+</nav>
 
-  <nav aria-label="Main navigation">
-    <a href="#home">Home</a>
-    <a href="#memories">Memories</a>
-    <a href="#stories">Stories</a>
-    <a href="#wishes">Birthday wishes</a>
-  </nav>
+<main>
+<section class="hero" id="home">
+  <p class="kicker">A little corner of the universe, just for me</p>
+  <h1>A Little Book of <em>Dominion</em></h1>
+  <p class="intro">A collection of moments, memories, and people who make life beautiful.</p>
 
-  <main>
-    <section class="hero" id="home">
-      <p class="eyebrow">A little corner of the universe, just for me</p>
-      <h1>A Little Book<br>of <em>Dominion</em></h1>
-      <p class="subtitle">
-        A collection of moments, memories, and people who make life beautiful.
-      </p>
+  <div class="collage" aria-label="Photo collage">
+    <div class="tape"></div>
+    <div class="photo photo-main">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=85" alt="Portrait placeholder. Replace with your own photo">
+    </div>
+    <div class="photo photo-side">
+      <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80" alt="Flowers">
+    </div>
+    <div class="photo photo-right">
+      <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=400&q=80" alt="Sunset">
+    </div>
+    <span class="sticker one">♡</span>
+    <span class="sticker two">✿</span>
+  </div>
 
-      <div class="flower" aria-hidden="true">✿</div>
+  <div class="paper-note">
+    <div class="label" id="countdown-heading">A new chapter begins in</div>
+    <div id="countdown">
+      <div><span class="time-number" id="days">00</span><span class="time-unit">Days</span></div>
+      <div><span class="time-number" id="hours">00</span><span class="time-unit">Hours</span></div>
+      <div><span class="time-number" id="minutes">00</span><span class="time-unit">Minutes</span></div>
+      <div><span class="time-number" id="seconds">00</span><span class="time-unit">Seconds</span></div>
+    </div>
+    <p id="countdown-message">Counting down to October 16, 2026.</p>
+  </div>
 
-      <div class="countdown-card" id="countdown-card">
-        <div class="countdown-label" id="countdown-heading">
-          A new chapter begins in
-        </div>
+  <a class="button" href="#memories">Wander through my little world ↗</a>
+</section>
 
-        <div id="countdown">
-          <div><span class="time-number" id="days">00</span><span class="time-unit">Days</span></div>
-          <div><span class="time-number" id="hours">00</span><span class="time-unit">Hours</span></div>
-          <div><span class="time-number" id="minutes">00</span><span class="time-unit">Minutes</span></div>
-          <div><span class="time-number" id="seconds">00</span><span class="time-unit">Seconds</span></div>
-        </div>
+<section class="section" id="memories">
+  <div class="section-label">Pages from my life</div>
+  <h2>Little pieces of me</h2>
+  <p class="description">Some moments deserve a page of their own. This little book is where the laughter, the lessons, and the lovely people get to stay.</p>
 
-        <p id="countdown-message" class="section-intro" style="margin:18px auto 0">
-          Counting down to October 16, 2026.
-        </p>
-      </div>
+  <div class="memory-collage">
+    <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80" alt="Flowers">
+    <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=400&q=80" alt="Sunset">
+    <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=400&q=80" alt="Friends together">
+  </div>
 
-      <a class="primary-button" href="#memories">Wander through my little world ↗</a>
-    </section>
+  <div class="feature-grid">
+    <a class="feature" href="#photos">
+      <div class="feature-icon">♡</div>
+      <h3>Polaroids & moments</h3>
+      <p>Snapshots and memories worth keeping.</p>
+    </a>
+    <a class="feature" href="#videos">
+      <div class="feature-icon">▷</div>
+      <h3>Little films</h3>
+      <p>Videos and tiny moments worth replaying.</p>
+    </a>
+    <a class="feature" href="#stories">
+      <div class="feature-icon">✎</div>
+      <h3>My stories</h3>
+      <p>Chapters written in my own voice.</p>
+    </a>
+    <a class="feature" href="#wishes">
+      <div class="feature-icon">☆</div>
+      <h3>Letters to remember</h3>
+      <p>Sweet messages from my favourite people.</p>
+    </a>
+  </div>
+</section>
 
-    <section class="section" id="memories">
-      <p class="section-tag">Pages from my life</p>
-      <h2>Little pieces of me</h2>
-      <p class="section-intro">
-        Some moments deserve a page of their own. This little book is where
-        the laughter, the lessons, and the lovely people get to stay.
-      </p>
+<section class="section" id="photos">
+  <div class="section-label">Frozen in time</div>
+  <h2>Polaroids & moments</h2>
+  <p class="description">This wall is waiting for photographs from my life.</p>
+</section>
 
-      <div class="feature-grid">
-        <a class="feature" href="#photo-note">
-          <div class="feature-symbol">♡</div>
-          <h3>Polaroids & moments</h3>
-          <p>A home for photographs, snapshots, and the memories behind them.</p>
-        </a>
+<section class="section" id="videos">
+  <div class="section-label">Press play on a memory</div>
+  <h2>Little films</h2>
+  <p class="description">A little collection of videos, happy moments, and memories in motion.</p>
+</section>
 
-        <a class="feature" href="#video-note">
-          <div class="feature-symbol">▷</div>
-          <h3>Little films</h3>
-          <p>Videos, happy accidents, and tiny pieces of life worth replaying.</p>
-        </a>
+<section class="section" id="stories">
+  <div class="section-label">A note to myself</div>
+  <h2>The story is still unfolding</h2>
+  <div class="quote">“Here is to everything I have been, everything I am becoming, and all the beautiful things I have yet to discover.” ♡</div>
+  <p class="description">This page will soon hold stories from my life, in my own words.</p>
+</section>
 
-        <a class="feature" href="#stories">
-          <div class="feature-symbol">✎</div>
-          <h3>My stories</h3>
-          <p>Words, reflections, and chapters written in my own voice.</p>
-        </a>
+<section class="section" id="wishes">
+  <div class="section-label">A little love, collected</div>
+  <h2>Leave a little sparkle</h2>
+  <p class="description">A place for birthday wishes, sweet messages, and memories from the people in my world. The interactive message book is coming next.</p>
+  <div class="quote">If you are reading this, you are part of this little chapter too. ♡</div>
+</section>
+</main>
 
-        <a class="feature" href="#wishes">
-          <div class="feature-symbol">✧</div>
-          <h3>Letters to remember</h3>
-          <p>Birthday wishes and sweet messages from the people in my world.</p>
-        </a>
-      </div>
-    </section>
+<footer>
+  MADE WITH LOVE, A LITTLE DREAMING & LOTS OF HEART ♡<br>
+  © 2026 · A LITTLE BOOK OF DOMINION
+</footer>
 
-    <section class="section" id="stories">
-      <p class="section-tag">A note to myself</p>
-      <h2>The story is still unfolding</h2>
-      <div class="note">
-        “Here is to everything I have been, everything I am becoming,
-        and all the beautiful things I have yet to discover.”
-      </div>
-      <p class="section-intro" style="margin-top:20px">
-        This page will soon hold stories from my life, in my own words.
-      </p>
-    </section>
+<script>
+const birthday = new Date(2026, 9, 16, 0, 0, 0);
 
-    <section class="section" id="wishes">
-      <p class="section-tag">A little love, collected</p>
-      <h2>Leave a little sparkle</h2>
-      <p class="section-intro">
-        A place for the kind words, birthday wishes, and memories people
-        want to share with me. The message book is coming soon.
-      </p>
-      <div class="note">
-        If you are reading this, you are part of this little chapter too. ♡
-      </div>
-    </section>
+function updateCountdown() {
+  const difference = birthday.getTime() - new Date().getTime();
+  const heading = document.getElementById("countdown-heading");
+  const countdown = document.getElementById("countdown");
+  const message = document.getElementById("countdown-message");
 
-    <section class="section" id="photo-note">
-      <p class="section-tag">Frozen in time</p>
-      <h2>My Polaroid wall</h2>
-      <p class="section-intro">
-        The photo collection will live here once the pictures are added.
-      </p>
-    </section>
+  if (difference <= 0) {
+    heading.textContent = "Today, a new chapter blooms";
+    countdown.classList.add("hidden");
+    message.textContent = "Happy birthday, Dominion! Your next chapter starts here. ✿";
+    return;
+  }
 
-    <section class="section" id="video-note">
-      <p class="section-tag">Press play on a memory</p>
-      <h2>Little films, big feelings</h2>
-      <p class="section-intro">
-        The video gallery will be added here next.
-      </p>
-    </section>
-  </main>
+  document.getElementById("days").textContent =
+    String(Math.floor(difference / 86400000)).padStart(2, "0");
+  document.getElementById("hours").textContent =
+    String(Math.floor((difference % 86400000) / 3600000)).padStart(2, "0");
+  document.getElementById("minutes").textContent =
+    String(Math.floor((difference % 3600000) / 60000)).padStart(2, "0");
+  document.getElementById("seconds").textContent =
+    String(Math.floor((difference % 60000) / 1000)).padStart(2, "0");
+}
 
-  <footer>
-    MADE WITH LOVE, A LITTLE DREAMING & LOTS OF HEART<br>
-    © 2026 · A LITTLE BOOK OF DOMINION
-  </footer>
-
-  <script>
-    const birthday = new Date(2026, 9, 16, 0, 0, 0);
-
-    function updateCountdown() {
-      const now = new Date();
-      const difference = birthday.getTime() - now.getTime();
-
-      const heading = document.getElementById("countdown-heading");
-      const message = document.getElementById("countdown-message");
-      const countdown = document.getElementById("countdown");
-      const card = document.getElementById("countdown-card");
-
-      if (difference <= 0) {
-        heading.textContent = "Today, a new chapter blooms";
-        countdown.classList.add("hidden");
-        message.textContent = "Happy birthday, Dominion! Your next chapter starts here. ✿";
-        card.style.background = "#f2e5e0";
-        return;
-      }
-
-      const days = Math.floor(difference / 86400000);
-      const hours = Math.floor((difference % 86400000) / 3600000);
-      const minutes = Math.floor((difference % 3600000) / 60000);
-      const seconds = Math.floor((difference % 60000) / 1000);
-
-      document.getElementById("days").textContent = String(days).padStart(2, "0");
-      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
-      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
-      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-  </script>
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
 </body>
-      </html>
-      
+</html>
+ 
