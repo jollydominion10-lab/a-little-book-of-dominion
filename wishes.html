@@ -1,0 +1,639 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Wishes | A Little Book of Dominion</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #fffaf4;
+      --paper: #fffdf9;
+      --pink: #e9a8b8;
+      --dark-pink: #bd7188;
+      --brown: #493a38;
+      --muted: #897875;
+      --line: #f0e2da;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--brown);
+      font-family: "DM Sans", sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .top-note {
+      background: #f8e8e9;
+      color: #815866;
+      text-align: center;
+      padding: 10px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    header {
+      padding: 22px 15px 14px;
+      text-align: center;
+    }
+
+    .brand {
+      font-family: "Playfair Display", serif;
+      font-size: 23px;
+      font-weight: 600;
+    }
+
+    .brand span {
+      color: var(--dark-pink);
+      font-style: italic;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 22px;
+      padding: 14px 12px 20px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    nav a {
+      color: var(--muted);
+    }
+
+    nav a.active {
+      color: var(--dark-pink);
+      font-weight: 700;
+    }
+
+    main {
+      width: min(100% - 36px, 680px);
+      margin: auto;
+    }
+
+    .intro {
+      padding: 45px 0 20px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: #f5dce2;
+      color: #965d70;
+      padding: 5px 13px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transform: rotate(-2deg);
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(38px, 9vw, 58px);
+      letter-spacing: -1.5px;
+    }
+
+    h1 span {
+      color: var(--dark-pink);
+      font-style: italic;
+    }
+
+    .intro p {
+      max-width: 420px;
+      margin: 17px auto 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cake-card {
+      margin: 28px 0 38px;
+      padding: 26px 15px 24px;
+      text-align: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 25px #6e51400a;
+    }
+
+    .cake-card h2 {
+      font-size: 27px;
+      margin-bottom: 5px;
+    }
+
+    .cake-card > p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .cake {
+      position: relative;
+      width: 220px;
+      height: 205px;
+      margin: 22px auto 12px;
+    }
+
+    .candles {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 5px;
+      display: flex;
+      justify-content: center;
+      gap: 23px;
+      z-index: 3;
+    }
+
+    .candle {
+      width: 12px;
+      height: 44px;
+      background: repeating-linear-gradient(
+        135deg,
+        #fff5e9 0 6px,
+        #e9a8b8 6px 11px
+      );
+      border-radius: 3px 3px 1px 1px;
+      position: relative;
+      border: 1px solid #df9eae;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .flame {
+      position: absolute;
+      width: 12px;
+      height: 18px;
+      top: -20px;
+      left: -1px;
+      background: #ffbe55;
+      border-radius: 50% 50% 45% 45%;
+      transform: rotate(4deg);
+      box-shadow: 0 0 12px #ffcb67aa;
+      animation: flicker .7s infinite alternate;
+    }
+
+    .candle.out .flame {
+      display: none;
+    }
+
+    .candle.out {
+      opacity: .65;
+    }
+
+    @keyframes flicker {
+      from { transform: rotate(-5deg) scale(.95); }
+      to { transform: rotate(5deg) scale(1.05); }
+    }
+
+    .frosting {
+      position: absolute;
+      left: 20px;
+      top: 53px;
+      width: 180px;
+      height: 25px;
+      border-radius: 12px 12px 8px 8px;
+      background: #f2b9c7;
+      z-index: 2;
+    }
+
+    .frosting::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: -8px;
+      height: 18px;
+      background: #f2b9c7;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .cake-top {
+      position: absolute;
+      top: 72px;
+      left: 23px;
+      width: 174px;
+      height: 52px;
+      background: #ffe7d9;
+      border: 1px solid #efc6b5;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .cake-bottom {
+      position: absolute;
+      top: 123px;
+      left: 10px;
+      width: 200px;
+      height: 55px;
+      background: #e8a8b5;
+      border: 1px solid #d890a1;
+      border-radius: 4px 4px 9px 9px;
+      box-shadow: 0 8px 0 #f3d9d3;
+    }
+
+    .cake-bottom::before {
+      content: "♡  ♡  ♡";
+      display: block;
+      color: white;
+      font-size: 18px;
+      letter-spacing: 9px;
+      padding-top: 12px;
+    }
+
+    .plate {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 220px;
+      height: 13px;
+      background: #f1dfd5;
+      border-radius: 50%;
+    }
+
+    .cake-message {
+      min-height: 28px;
+      color: var(--dark-pink);
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-size: 16px;
+      margin: 5px 0 15px;
+    }
+
+    .button {
+      border: none;
+      border-radius: 5px;
+      padding: 12px 18px;
+      background: var(--dark-pink);
+      color: white;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 4px;
+    }
+
+    .button.secondary {
+      background: #f5e3e4;
+      color: #875566;
+    }
+
+    .section-label {
+      display: block;
+      color: var(--dark-pink);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 19px;
+    }
+
+    .wish-section {
+      margin: 38px 0;
+    }
+
+    .wish-form {
+      background: #f9eceb;
+      padding: 23px 18px;
+      border-radius: 8px;
+      margin-top: 18px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid #ead6d2;
+      background: #fffdf9;
+      border-radius: 5px;
+      padding: 12px;
+      color: var(--brown);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    textarea {
+      min-height: 105px;
+      resize: vertical;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 12px;
+    }
+
+    .wish-wall {
+      display: grid;
+      gap: 13px;
+      margin: 20px 0 45px;
+    }
+
+    .wish-note {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 18px;
+      box-shadow: 0 5px 15px #6e514008;
+    }
+
+    .wish-note .heart {
+      color: var(--dark-pink);
+      font-size: 18px;
+    }
+
+    .wish-note p {
+      font-family: "Playfair Display", serif;
+      font-size: 16px;
+      margin: 5px 0 10px;
+    }
+
+    .wish-note strong {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    #confettiLayer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .confetti {
+      position: absolute;
+      top: -15px;
+      width: 9px;
+      height: 13px;
+      animation: fall 2.5s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding: 26px 15px 35px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .footer span {
+      color: var(--dark-pink);
+    }
+
+    @media (max-width: 360px) {
+      nav { gap: 14px; }
+      .cake { transform: scale(.9); margin-top: 10px; margin-bottom: 5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-note">A birthday scrapbook · October 16</div>
+
+  <header>
+    <a class="brand" href="index.html">A Little Book <span>of Dominion</span></a>
+  </header>
+
+  <nav aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="memories.html">Memories</a>
+    <a href="stories.html">Stories</a>
+    <a class="active" href="wishes.html">Wishes</a>
+  </nav>
+
+  <main>
+    <section class="intro">
+      <span class="eyebrow">A little birthday magic</span>
+      <h1>Make a <span>wish</span></h1>
+      <p>
+        Another year, another chapter, and so many beautiful things
+        still waiting to happen. Leave a little love here and help
+        make this birthday one to remember.
+      </p>
+    </section>
+
+    <section class="cake-card">
+      <h2>A cake just for you 🎂</h2>
+      <p>Tap each candle to blow it out, then make a wish.</p>
+
+      <div class="cake" aria-label="Illustrated birthday cake">
+        <div class="candles">
+          <button class="candle" type="button" aria-label="Blow out candle 1"><span class="flame"></span></button>
+          <button class="candle" type="button" aria-label="Blow out candle 2"><span class="flame"></span></button>
+          <button class="candle" type="button" aria-label="Blow out candle 3"><span class="flame"></span></button>
+          <button class="candle" type="button" aria-label="Blow out candle 4"><span class="flame"></span></button>
+          <button class="candle" type="button" aria-label="Blow out candle 5"><span class="flame"></span></button>
+        </div>
+        <div class="frosting"></div>
+        <div class="cake-top"></div>
+        <div class="cake-bottom"></div>
+        <div class="plate"></div>
+      </div>
+
+      <div id="cakeMessage" class="cake-message" aria-live="polite">
+        Five little flames, five little wishes ♡
+      </div>
+
+      <button class="button" id="wishButton" type="button">Make a wish ✨</button>
+      <button class="button secondary" id="relightButton" type="button">Relight candles</button>
+    </section>
+
+    <section class="wish-section">
+      <span class="section-label">Little words, lots of love</span>
+      <h2 class="section-title">Leave a birthday wish</h2>
+      <p class="section-description">
+        A prayer, a sweet message, a hope for the new year, or a few
+        words to make me smile. Every kind wish means something.
+      </p>
+
+      <form class="wish-form" id="wishForm">
+        <div class="field">
+          <label for="wishName">Your name</label>
+          <input id="wishName" type="text" placeholder="Your name or nickname" required>
+        </div>
+
+        <div class="field">
+          <label for="wishText">Your birthday message</label>
+          <textarea id="wishText" maxlength="500" placeholder="Write something lovely..." required></textarea>
+        </div>
+
+        <button class="button" type="submit">♡ Send my wish</button>
+
+        <p class="notice" id="wishMessage" role="status" aria-live="polite">
+          Birthday wishes will need to be reviewed before appearing publicly.
+        </p>
+      </form>
+    </section>
+
+    <section class="wish-section">
+      <span class="section-label">From the heart</span>
+      <h2 class="section-title">The wishes wall</h2>
+      <p class="section-description">
+        A few little reminders of the love this birthday is surrounded by.
+        Real visitor wishes will appear here after we connect the database.
+      </p>
+
+      <div class="wish-wall">
+        <article class="wish-note">
+          <span class="heart">♡</span>
+          <p>May this next chapter bring you peace, courage, joy, and beautiful surprises.</p>
+          <strong>A little birthday blessing</strong>
+        </article>
+
+        <article class="wish-note">
+          <span class="heart">♡</span>
+          <p>May you keep growing into the person you dream of becoming, one lovely day at a time.</p>
+          <strong>With love, always</strong>
+        </article>
+
+        <article class="wish-note">
+          <span class="heart">♡</span>
+          <p>May your year be full of answered prayers, genuine laughter, and memories worth keeping.</p>
+          <strong>A wish for your new year</strong>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="confettiLayer" aria-hidden="true"></div>
+
+  <footer class="footer">
+    Made with <span>♡</span> for a birthday full of beautiful things.<br>
+    © 2026 A Little Book of Dominion
+  </footer>
+
+  <script>
+    const candles = document.querySelectorAll(".candle");
+    const cakeMessage = document.getElementById("cakeMessage");
+    const wishButton = document.getElementById("wishButton");
+    const relightButton = document.getElementById("relightButton");
+    const confettiLayer = document.getElementById("confettiLayer");
+
+    function updateCakeMessage() {
+      const litCandles = document.querySelectorAll(".candle:not(.out)").length;
+
+      if (litCandles === 0) {
+        cakeMessage.textContent = "All the candles are out! May your wish come true. ♡";
+      } else {
+        cakeMessage.textContent =
+          litCandles + (litCandles === 1 ? " little flame left ♡" : " little flames left ♡");
+      }
+    }
+
+    candles.forEach(function(candle) {
+      candle.addEventListener("click", function() {
+        candle.classList.toggle("out");
+        updateCakeMessage();
+      });
+    });
+
+    relightButton.addEventListener("click", function() {
+      candles.forEach(function(candle) {
+        candle.classList.remove("out");
+      });
+      cakeMessage.textContent = "Five little flames, five little wishes ♡";
+    });
+
+    function celebrate() {
+      const colors = ["#e9a8b8", "#f6d8a8", "#d6c3e8", "#e9c8ba", "#c9d9c0"];
+
+      for (let i = 0; i < 65; i++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * 0.8 + "s";
+        piece.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+        confettiLayer.appendChild(piece);
+
+        piece.addEventListener("animationend", function() {
+          piece.remove();
+        });
+      }
+
+      window.setTimeout(function() {
+        confettiLayer.replaceChildren();
+      }, 4000);
+    }
+
+    wishButton.addEventListener("click", function() {
+      const allOut = document.querySelectorAll(".candle.out").length === candles.length;
+
+      if (allOut) {
+        cakeMessage.textContent = "Your wish is sent into the universe! ✨";
+        celebrate();
+      } else {
+        cakeMessage.textContent = "Close your eyes, tap every candle, and make a wish! ♡";
+      }
+    });
+
+    document.getElementById("wishForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      document.getElementById("wishMessage").textContent =
+        "The design is ready, but saving wishes is not connected yet. Your message has NOT been uploaded or saved. We'll connect the database before accepting real submissions.";
+
+      document.getElementById("wishMessage").style.color = "#9b536b";
+    });
+  </script>
+</body>
+  </html>
+  
