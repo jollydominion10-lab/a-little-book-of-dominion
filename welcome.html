@@ -1,255 +1,151 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f8eee7">
-
-  <title>A Little Book of Dominion | Welcome</title>
-  <meta name="description" content="Come inside A Little Book of Dominion, a collection of memories, stories, and birthday wishes.">
+  <meta name="theme-color" content="#c9a9a2">
+  <title>A Little Book of Dominion</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Parisienne&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --cream: #f8eee7;
-      --paper: #fffaf5;
-      --pink: #e5b8c1;
-      --rose: #ad7183;
-      --brown: #59443d;
-      --muted: #947e74;
-      --line: #dfc9bb;
-    }
-
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
     }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      min-height: 100svh;
-      padding: 22px 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow-x: hidden;
-      color: var(--brown);
-      background:
-        radial-gradient(ellipse at 12% 15%, #ffffffb5, transparent 38%),
-        radial-gradient(ellipse at 90% 85%, #e9cbd0a0, transparent 35%),
-        var(--cream);
-      font-family: "DM Sans", sans-serif;
+      font-family: 'Playfair Display', Georgia, serif;
+      background: #c9aaa1;
     }
 
     .welcome {
-      width: min(100%, 480px);
-      text-align: center;
-      animation: appear 1s ease both;
-    }
-
-    .top-note {
-      margin-bottom: 17px;
-      color: var(--rose);
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .book-wrap {
       position: relative;
-      width: min(100%, 350px);
-      margin: 0 auto 26px;
-      padding: 10px 10px 10px 18px;
-      transform: rotate(-1deg);
-      filter: drop-shadow(10px 16px 15px #75534820);
-    }
-
-    .book {
-      position: relative;
-      min-height: 405px;
-      padding: 38px 23px 30px;
+      min-height: 100svh;
+      width: 100%;
       overflow: hidden;
-      border: 1px solid #b99180;
-      border-radius: 5px 13px 13px 5px;
-      background:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 31px,
-          #bca08a17 32px
-        ),
-        linear-gradient(110deg, #ead3c5, #f8e9dd 18%, #f6e5d8 82%, #dcbcae);
-      box-shadow:
-        inset 5px 0 0 #b9907e,
-        inset 9px 0 0 #f9eadd,
-        inset -4px 0 0 #cba998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 22px;
+      isolation: isolate;
+      background: #c9aaa1;
+      color: #fff8f2;
+      text-align: center;
     }
 
-    .book::before {
+    /* Your original photo fills the whole screen */
+    .welcome::before {
       content: "";
       position: absolute;
-      inset: 12px;
-      border: 1px solid #b991807a;
-      pointer-events: none;
+      inset: 0;
+      z-index: -2;
+      background-image: url("dominion-portrait.jpg");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      transform: scale(1.02);
     }
 
-    .book::after {
-      content: "✿";
+    /* Soft beige and dusty-rose blend, not bright pink */
+    .welcome::after {
+      content: "";
       position: absolute;
-      bottom: 19px;
-      right: 23px;
-      color: #b27e8b;
-      font-size: 28px;
-      opacity: .8;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(177, 139, 130, 0.48) 0%,
+          rgba(111, 78, 73, 0.38) 42%,
+          rgba(193, 158, 148, 0.44) 100%
+        ),
+        linear-gradient(
+          90deg,
+          rgba(224, 199, 186, 0.20),
+          transparent 55%,
+          rgba(218, 187, 178, 0.20)
+        );
     }
 
-    .ribbon {
-      position: absolute;
-      z-index: 3;
-      top: -7px;
-      right: 39px;
-      width: 32px;
-      height: 87px;
-      background: #bd8494;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 79%, 0 100%);
-      box-shadow: 0 3px 7px #75534825;
+    .content {
+      width: 100%;
+      max-width: 520px;
+      padding: 28px 10px;
+      animation: appear 1.4s ease both;
+      text-shadow: 0 2px 18px rgba(53, 35, 33, 0.32);
     }
 
-    .corner {
-      position: absolute;
-      z-index: 2;
-      color: #a77c69;
-      font-size: 21px;
-    }
-
-    .corner-one {
-      top: 20px;
-      left: 24px;
-    }
-
-    .corner-two {
-      top: 20px;
-      right: 24px;
-    }
-
-    .corner-three {
-      bottom: 20px;
-      left: 24px;
-    }
-
-    .corner-four {
-      bottom: 20px;
-      right: 24px;
-    }
-
-    .book-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .tiny-label {
-      margin: 9px 0 17px;
-      color: #987565;
-      font-size: 9px;
-      letter-spacing: 3px;
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 4px;
+      line-height: 1.8;
       text-transform: uppercase;
+      margin-bottom: 24px;
     }
 
-    .flower {
-      margin: 5px 0 12px;
-      color: var(--rose);
-      font-size: 24px;
+    .ornament {
+      color: #f6dcd5;
+      font-size: 28px;
+      margin-bottom: 24px;
     }
 
     h1 {
-      margin: 0;
-      font-family: "Cormorant Garamond", serif;
-      font-size: clamp(39px, 10vw, 52px);
-      font-weight: 500;
-      line-height: .99;
-      letter-spacing: -1px;
+      font-weight: 400;
+      font-size: clamp(40px, 9vw, 65px);
+      line-height: 1.13;
+      margin-bottom: 18px;
     }
 
     h1 span {
       display: block;
-      margin-top: 8px;
-      color: var(--rose);
-      font-family: "Parisienne", cursive;
-      font-size: 1.15em;
-      font-weight: 400;
-      letter-spacing: 0;
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(49px, 12vw, 78px);
+      color: #f8dcd7;
+      margin-top: 2px;
     }
 
-    .rule {
-      width: 70px;
-      height: 1px;
-      margin: 23px auto 17px;
-      background: #b99180;
-    }
-
-    .subtitle {
-      max-width: 235px;
-      margin: 0 auto;
-      color: #846d63;
-      font-family: "Cormorant Garamond", serif;
-      font-size: 18px;
-      line-height: 1.4;
-    }
-
-    .edition {
-      margin-top: 23px;
-      color: #987565;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .welcome-copy {
-      max-width: 330px;
-      margin: 0 auto;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.8;
+    .message {
+      max-width: 390px;
+      margin: 0 auto 34px;
+      font-size: 16px;
+      line-height: 1.9;
+      color: #fff7f1;
     }
 
     .enter-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 11px;
-      margin-top: 21px;
-      padding: 14px 24px;
-      border: 1px solid var(--brown);
-      border-radius: 3px;
-      background: var(--brown);
-      color: white;
-      font-family: "DM Sans", sans-serif;
-      font-size: 11px;
-      letter-spacing: .5px;
+      display: inline-block;
+      padding: 15px 32px;
+      border: 1px solid rgba(255, 239, 231, 0.85);
+      border-radius: 50px;
+      background: rgba(133, 81, 82, 0.74);
+      color: #fffaf6;
+      font-family: inherit;
+      font-size: 16px;
       text-decoration: none;
-      transition: background .2s ease, transform .2s ease;
+      text-shadow: none;
+      box-shadow: 0 8px 25px rgba(61, 39, 37, 0.12);
+      transition: background 0.3s ease, transform 0.3s ease;
     }
 
     .enter-button:hover {
-      background: var(--rose);
-      border-color: var(--rose);
+      background: rgba(108, 66, 68, 0.92);
       transform: translateY(-2px);
     }
 
-    .enter-button:focus-visible {
-      outline: 3px solid var(--rose);
-      outline-offset: 4px;
-    }
-
-    .footer-note {
-      margin-top: 22px;
-      color: #a28b80;
-      font-family: "Parisienne", cursive;
-      font-size: 19px;
+    .footer {
+      margin-top: 32px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #fff1e9;
     }
 
     @keyframes appear {
@@ -263,25 +159,43 @@
       }
     }
 
-    @media (max-width: 380px) {
-      .book {
-        min-height: 370px;
-        padding: 31px 18px 25px;
+    @media (max-height: 650px) {
+      .content {
+        padding: 12px 8px;
       }
 
-      .book-wrap {
-        width: min(100%, 320px);
+      .eyebrow {
+        margin-bottom: 12px;
       }
 
-      .subtitle {
-        font-size: 16px;
+      .ornament {
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        font-size: clamp(34px, 8vw, 52px);
+      }
+
+      h1 span {
+        font-size: clamp(42px, 10vw, 62px);
+      }
+
+      .message {
+        margin-bottom: 20px;
+      }
+
+      .footer {
+        margin-top: 18px;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
+      .content {
+        animation: none;
+      }
+
+      .enter-button {
+        transition: none;
       }
     }
   </style>
@@ -289,49 +203,27 @@
 
 <body>
   <main class="welcome">
-    <div class="top-note">A little something, made with love</div>
+    <div class="content">
+      <p class="eyebrow">A little corner of my world</p>
 
-    <div class="book-wrap">
-      <div class="ribbon" aria-hidden="true"></div>
+      <div class="ornament">♡ &nbsp; ✧ &nbsp; ♡</div>
 
-      <section class="book" aria-label="Cover of A Little Book of Dominion">
-        <span class="corner corner-one" aria-hidden="true">❧</span>
-        <span class="corner corner-two" aria-hidden="true">❧</span>
-        <span class="corner corner-three" aria-hidden="true">❧</span>
-        <span class="corner corner-four" aria-hidden="true">❧</span>
+      <h1>
+        Welcome to my
+        <span>little world.</span>
+      </h1>
 
-        <div class="book-content">
-          <div class="tiny-label">A personal collection</div>
+      <p class="message">
+        A collection of moments, memories, and people
+        who make life beautiful.
+      </p>
 
-          <div class="flower" aria-hidden="true">❀</div>
+      <a class="enter-button" href="index.html">
+        Enter my world ♡
+      </a>
 
-          <h1>
-            A Little Book
-            <span>of Dominion</span>
-          </h1>
-
-          <div class="rule"></div>
-
-          <p class="subtitle">
-            A collection of moments, memories, and people who make life beautiful.
-          </p>
-
-          <div class="edition">The birthday edition · 2026</div>
-        </div>
-      </section>
+      <p class="footer">MADE WITH LOVE · DOMINION</p>
     </div>
-
-    <p class="welcome-copy">
-      Every little life holds a thousand stories.
-      This one is mine. I'm glad you're here.
-    </p>
-
-    <a class="enter-button" href="index.html">
-      Open my diary <span aria-hidden="true">♡ →</span>
-    </a>
-
-    <div class="footer-note">Come in, turn a page, stay awhile.</div>
   </main>
 </body>
-  </html>
-  
+</html>
