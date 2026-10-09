@@ -2,455 +2,573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#faf3e9">
-<title>A Little Book of Dominion</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Parisienne&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fbf5ef">
+  <title>A Little Book of Dominion</title>
+  <meta name="description" content="A collection of moments, memories, and people who make life beautiful.">
 
-<style>
-:root {
-  --cream: #faf3e9;
-  --paper: #fffaf2;
-  --pink: #f0d1d0;
-  --rose: #b96f7b;
-  --brown: #57392f;
-  --gold: #c3a16c;
-  --muted: #91786d;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
-body {
-  margin: 0;
-  background: var(--cream);
-  color: var(--brown);
-  font-family: "DM Sans", sans-serif;
-}
-a { color: inherit; }
-.topline {
-  height: 4px;
-  background: linear-gradient(90deg, #d99da5, #d9bd8d, #d99da5);
-}
-header {
-  padding: 15px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  border-bottom: 1px solid #e9d8c7;
-  background: var(--paper);
-}
-.brand {
-  font: italic 20px "Playfair Display", serif;
-}
-.brand span { color: var(--rose); }
-.edition {
-  font-size: 8px;
-  letter-spacing: 1.5px;
-  text-align: right;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-nav {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  justify-content: space-around;
-  background: #fffaf2f2;
-  border-bottom: 1px solid #e8d9cd;
-  backdrop-filter: blur(8px);
-}
-nav a {
-  padding: 13px 5px;
-  font-size: 11px;
-  text-decoration: none;
-  text-align: center;
-}
-nav a:hover { color: var(--rose); }
-.hero {
-  position: relative;
-  padding: 30px 17px 32px;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse at 0% 10%, #eed5c7 0, transparent 40%),
-    radial-gradient(ellipse at 100% 90%, #e8c8c6 0, transparent 36%),
-    var(--cream);
-}
-.kicker {
-  text-align: center;
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-h1 {
-  margin: 10px 0 5px;
-  text-align: center;
-  font: 400 clamp(36px, 10vw, 55px)/1.08 "Playfair Display", serif;
-}
-h1 em {
-  display: block;
-  color: var(--rose);
-  font: 56px/1.15 "Parisienne", cursive;
-}
-.intro {
-  max-width: 330px;
-  margin: 8px auto 18px;
-  text-align: center;
-  font: 15px/1.7 "Playfair Display", serif;
-}
-.collage {
-  position: relative;
-  max-width: 390px;
-  margin: 18px auto 20px;
-  min-height: 285px;
-}
-.photo {
-  position: absolute;
-  padding: 7px 7px 25px;
-  background: #fffdf8;
-  box-shadow: 0 7px 18px #60453625;
-  border: 1px solid #eadfce;
-}
-.photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.photo-main {
-  width: 66%;
-  height: 250px;
-  left: 17%;
-  top: 12px;
-  transform: rotate(-3deg);
-}
-.photo-side {
-  width: 36%;
-  height: 128px;
-  left: 0;
-  top: 110px;
-  transform: rotate(-9deg);
-}
-.photo-right {
-  width: 34%;
-  height: 120px;
-  right: 0;
-  top: 26px;
-  transform: rotate(8deg);
-}
-.tape {
-  position: absolute;
-  z-index: 2;
-  width: 65px;
-  height: 19px;
-  background: #e9b9b5bb;
-  left: 41%;
-  top: 3px;
-  transform: rotate(-7deg);
-}
-.sticker {
-  position: absolute;
-  color: var(--rose);
-  font-size: 27px;
-}
-.sticker.one { left: 3%; top: 32px; transform: rotate(-15deg); }
-.sticker.two { right: 4%; bottom: 8px; transform: rotate(13deg); }
-.paper-note {
-  max-width: 330px;
-  margin: 0 auto;
-  padding: 18px 13px;
-  text-align: center;
-  background: #f4dedd;
-  border: 1px solid #e8c8c3;
-  transform: rotate(-1deg);
-}
-.paper-note .label {
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-#countdown {
-  display: flex;
-  justify-content: center;
-  gap: clamp(10px, 4vw, 22px);
-  margin: 14px 0 9px;
-}
-.time-number {
-  display: block;
-  font: 29px "Playfair Display", serif;
-}
-.time-unit {
-  display: block;
-  margin-top: 4px;
-  font-size: 8px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-#countdown-message {
-  font: 12px "Playfair Display", serif;
-  margin: 8px 0 0;
-}
-.button {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  margin: 23px auto 0;
-  padding: 13px 21px;
-  border-radius: 28px;
-  background: var(--rose);
-  color: white;
-  text-decoration: none;
-  font: 14px "Playfair Display", serif;
-  text-align: center;
-  box-shadow: 0 5px 12px #b96f7b26;
-}
-.section {
-  padding: 44px 20px;
-  scroll-margin-top: 55px;
-}
-.section-label {
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--rose);
-}
-h2 {
-  margin: 9px 0 12px;
-  font: 400 34px/1.2 "Playfair Display", serif;
-}
-.description {
-  color: var(--muted);
-  font: 14px/1.9 "Playfair Display", serif;
-}
-.memory-collage {
-  position: relative;
-  height: 180px;
-  margin: 24px 0;
-  background: #f1dfd1;
-  overflow: hidden;
-}
-.memory-collage img {
-  position: absolute;
-  width: 42%;
-  height: 145px;
-  padding: 6px 6px 20px;
-  object-fit: cover;
-  background: white;
-  box-shadow: 0 4px 12px #60453620;
-}
-.memory-collage img:nth-child(1) {
-  left: 5%; top: 17px; transform: rotate(-8deg);
-}
-.memory-collage img:nth-child(2) {
-  left: 30%; top: 6px; transform: rotate(4deg);
-}
-.memory-collage img:nth-child(3) {
-  right: 3%; top: 20px; transform: rotate(8deg);
-}
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-.feature {
-  min-height: 130px;
-  padding: 16px 13px;
-  border: 1px solid #e5d1c3;
-  border-radius: 10px;
-  text-decoration: none;
-  background: #fffaf480;
-}
-.feature-icon {
-  color: var(--rose);
-  font-size: 23px;
-}
-.feature h3 {
-  font: 19px "Playfair Display", serif;
-  margin: 12px 0 6px;
-}
-.feature p {
-  margin: 0;
-  font-size: 11px;
-  line-height: 1.7;
-  color: var(--muted);
-}
-.quote {
-  margin: 24px 0;
-  padding: 23px 18px;
-  text-align: center;
-  background: #f1dcda;
-  font: italic 18px/1.8 "Playfair Display", serif;
-}
-footer {
-  padding: 28px 15px;
-  text-align: center;
-  font-size: 9px;
-  letter-spacing: 1px;
-  line-height: 2;
-  color: var(--muted);
-  border-top: 1px solid #e8d9cd;
-}
-.hidden { display: none !important; }
-@media (min-width: 650px) {
-  body { max-width: 760px; margin: 0 auto; box-shadow: 0 0 35px #5c44310b; }
-  .hero { padding: 42px 35px; }
-  .collage { min-height: 330px; }
-  .photo-main { height: 295px; }
-  .photo-side, .photo-right { height: 145px; }
-  .section { padding: 55px 35px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-}
-</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #fbf5ef;
+      --paper: #fffaf6;
+      --pink: #e9b8c4;
+      --rose: #b87589;
+      --brown: #57443f;
+      --muted: #8f7972;
+      --line: #eadbd2;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--brown);
+      font-family: "DM Sans", sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .site {
+      width: min(100% - 30px, 1000px);
+      margin: auto;
+    }
+
+    header {
+      padding: 22px 0 12px;
+      text-align: center;
+    }
+
+    .brand {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 27px;
+      font-weight: 600;
+      letter-spacing: .4px;
+      text-decoration: none;
+    }
+
+    .brand span { color: var(--rose); }
+
+    .tagline {
+      margin: 3px 0 17px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1.1px;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 21px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 0;
+    }
+
+    nav a {
+      font-size: 12px;
+      text-decoration: none;
+      color: var(--muted);
+    }
+
+    nav a:hover, nav a.active { color: var(--rose); }
+
+    .hero {
+      padding: 36px 0 25px;
+      display: grid;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .photo-collage {
+      position: relative;
+      width: min(100%, 390px);
+      height: 390px;
+      margin: 0 auto;
+    }
+
+    .paper-shadow {
+      position: absolute;
+      inset: 19px 27px 15px 19px;
+      background: #eedbd2;
+      transform: rotate(-5deg);
+      border-radius: 3px;
+    }
+
+    .main-photo {
+      position: absolute;
+      top: 10px;
+      left: 35px;
+      width: 73%;
+      height: 85%;
+      padding: 9px 9px 35px;
+      background: white;
+      box-shadow: 0 10px 30px #6f4b401c;
+      transform: rotate(2deg);
+    }
+
+    .main-photo img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      background: #ead9d1;
+    }
+
+    .photo-caption {
+      position: absolute;
+      bottom: 9px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: "Parisienne", cursive;
+      font-size: 20px;
+      color: var(--rose);
+    }
+
+    .mini-photo {
+      position: absolute;
+      width: 112px;
+      height: 125px;
+      padding: 6px 6px 23px;
+      background: white;
+      box-shadow: 0 6px 18px #6f4b4020;
+    }
+
+    .mini-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #ead9d1;
+    }
+
+    .mini-one {
+      top: 3px;
+      right: 1px;
+      transform: rotate(9deg);
+    }
+
+    .mini-two {
+      bottom: 0;
+      left: 0;
+      transform: rotate(-9deg);
+    }
+
+    .tape {
+      position: absolute;
+      width: 69px;
+      height: 21px;
+      background: #e9b8c4b5;
+      top: 0;
+      left: 42%;
+      transform: rotate(-7deg);
+      z-index: 2;
+    }
+
+    .sparkle {
+      position: absolute;
+      color: var(--rose);
+      font-size: 25px;
+    }
+
+    .sparkle-one { right: 3px; bottom: 89px; }
+    .sparkle-two { left: 16px; top: 61px; font-size: 17px; }
+
+    .hero-copy { text-align: center; }
+
+    .eyebrow {
+      display: inline-block;
+      background: #f3dfe3;
+      color: #996375;
+      padding: 6px 13px;
+      border-radius: 30px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      font-family: "Cormorant Garamond", serif;
+      font-weight: 500;
+      line-height: 1.08;
+    }
+
+    h1 {
+      margin: 17px 0 12px;
+      font-size: clamp(43px, 10vw, 72px);
+      letter-spacing: -1.5px;
+    }
+
+    h1 em {
+      color: var(--rose);
+      font-family: "Parisienne", cursive;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      max-width: 430px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 21px;
+      padding: 12px 21px;
+      background: var(--brown);
+      color: white;
+      border: 0;
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button:hover { background: var(--rose); }
+
+    .countdown {
+      margin: 24px auto 43px;
+      max-width: 650px;
+      padding: 23px 13px;
+      text-align: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      position: relative;
+    }
+
+    .countdown::before {
+      content: "♡";
+      position: absolute;
+      top: -15px;
+      left: calc(50% - 15px);
+      padding: 0 9px;
+      background: var(--cream);
+      color: var(--rose);
+      font-size: 22px;
+    }
+
+    .countdown h2 {
+      margin: 0 0 5px;
+      font-size: 29px;
+    }
+
+    .countdown-note {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .timer {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+      max-width: 440px;
+      margin: auto;
+    }
+
+    .time-box {
+      padding: 12px 3px;
+      background: #f7e9e8;
+      border-radius: 3px;
+    }
+
+    .time-box strong {
+      display: block;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(24px, 6vw, 34px);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .time-box span {
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .section-heading { text-align: center; }
+
+    .section-heading .script {
+      color: var(--rose);
+      font-family: "Parisienne", cursive;
+      font-size: 25px;
+    }
+
+    .section-heading h2 {
+      margin: 0 0 8px;
+      font-size: 38px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0 auto;
+      max-width: 430px;
+    }
+
+    .page-cards {
+      display: grid;
+      gap: 13px;
+      margin: 23px 0 45px;
+    }
+
+    .page-card {
+      display: block;
+      padding: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      text-decoration: none;
+      transition: transform .2s ease;
+    }
+
+    .page-card:hover { transform: translateY(-3px); }
+
+    .card-icon {
+      font-size: 25px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .page-card h3 {
+      font-size: 27px;
+      margin: 0 0 5px;
+    }
+
+    .page-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card-link {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--rose);
+      font-size: 11px;
+    }
+
+    .closing-note {
+      margin: 0 0 37px;
+      padding: 25px 18px;
+      background: #f4e3e4;
+      text-align: center;
+    }
+
+    .closing-note p {
+      margin: 0;
+      font-family: "Parisienne", cursive;
+      font-size: 27px;
+      color: #956276;
+    }
+
+    footer {
+      padding: 18px 0 25px;
+      border-top: 1px solid var(--line);
+      text-align: center;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    @media (min-width: 700px) {
+      .site { width: min(100% - 60px, 1000px); }
+      header { padding-top: 28px; }
+      .hero {
+        grid-template-columns: 1fr 1fr;
+        gap: 35px;
+        padding: 55px 0 35px;
+      }
+      .photo-collage { height: 450px; }
+      .hero-copy { text-align: left; }
+      .intro { margin-left: 0; }
+      .page-cards { grid-template-columns: repeat(3, 1fr); }
+      .page-card { padding: 25px 19px; }
+    }
+
+    @media (max-width: 360px) {
+      .photo-collage { height: 330px; }
+      .mini-photo { width: 90px; height: 105px; }
+      .main-photo { left: 28px; }
+      nav { gap: 8px 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
 </head>
 
 <body>
-<div class="topline"></div>
-<header>
-  <div class="brand">A Little Book of <span>Dominion</span></div>
-  <div class="edition">The birthday<br>edition · 2026</div>
-</header>
+  <div class="site">
+    <header>
+      <a class="brand" href="index.html">A Little Book <span>of Dominion</span></a>
+      <p class="tagline">A LITTLE COLLECTION OF A LIFE IN BLOOM</p>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="memories.html">Memories</a>
-  <a href="stories.html">Stories</a>
-  <a href="wishes.html">Wishes</a>
-</nav>
-<main>
-<section class="hero" id="home">
-  <p class="kicker">A little corner of the universe, just for me</p>
-  <h1>A Little Book of <em>Dominion</em></h1>
-  <p class="intro">A collection of moments, memories, and people who make life beautiful.</p>
+      <nav aria-label="Main navigation">
+        <a class="active" href="index.html">Home</a>
+        <a href="memories.html">Memories</a>
+        <a href="stories.html">Stories</a>
+        <a href="wishes.html">Wishes</a>
+      </nav>
+    </header>
 
-  <div class="collage" aria-label="Photo collage">
-    <div class="tape"></div>
-    <div class="photo photo-main">
-      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=85" alt="Portrait placeholder. Replace with your own photo">
-    </div>
-    <div class="photo photo-side">
-      <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80" alt="Flowers">
-    </div>
-    <div class="photo photo-right">
-      <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=400&q=80" alt="Sunset">
-    </div>
-    <span class="sticker one">♡</span>
-    <span class="sticker two">✿</span>
+    <main>
+      <section class="hero" id="home">
+        <div class="photo-collage" aria-label="Decorative photo collage">
+          <div class="paper-shadow"></div>
+
+          <div class="main-photo">
+            <!-- Replace this image URL with your own portrait when ready. -->
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85"
+              alt="Portrait placeholder for the birthday girl"
+            >
+            <div class="photo-caption">a little piece of me</div>
+          </div>
+
+          <div class="mini-photo mini-one">
+            <img
+              src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=400&q=80"
+              alt="Friends making memories"
+            >
+          </div>
+
+          <div class="mini-photo mini-two">
+            <img
+              src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80"
+              alt="Soft pink flowers"
+            >
+          </div>
+
+          <div class="tape"></div>
+          <span class="sparkle sparkle-one" aria-hidden="true">✧</span>
+          <span class="sparkle sparkle-two" aria-hidden="true">♡</span>
+        </div>
+
+        <div class="hero-copy">
+          <span class="eyebrow">A new chapter begins</span>
+          <h1>Little pieces<br>of <em>me.</em></h1>
+          <p class="intro">
+            A collection of moments, memories, and people who make life beautiful.
+            Welcome to my little corner of the world.
+          </p>
+          <a class="button" href="memories.html">Wander through my memories ↗</a>
+        </div>
+      </section>
+
+      <section class="countdown" aria-label="Birthday countdown">
+        <h2 id="countdown-title">Counting down to my day</h2>
+        <p class="countdown-note" id="countdown-note">A little closer to another year of becoming.</p>
+
+        <div class="timer" aria-live="off">
+          <div class="time-box">
+            <strong id="days">00</strong>
+            <span>Days</span>
+          </div>
+          <div class="time-box">
+            <strong id="hours">00</strong>
+            <span>Hours</span>
+          </div>
+          <div class="time-box">
+            <strong id="minutes">00</strong>
+            <span>Minutes</span>
+          </div>
+          <div class="time-box">
+            <strong id="seconds">00</strong>
+            <span>Seconds</span>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="explore-title">
+        <div class="section-heading">
+          <span class="script">Turn the page...</span>
+          <h2 id="explore-title">Explore my little book</h2>
+          <p>Every page holds a different part of this beautiful, unfinished story.</p>
+        </div>
+
+        <div class="page-cards">
+          <a class="page-card" href="memories.html">
+            <span class="card-icon" aria-hidden="true">♡</span>
+            <h3>Memories</h3>
+            <p>Little moments worth keeping, favourite photographs, and days I never want to forget.</p>
+            <span class="card-link">Open the album ↗</span>
+          </a>
+
+          <a class="page-card" href="stories.html">
+            <span class="card-icon" aria-hidden="true">✎</span>
+            <h3>Stories</h3>
+            <p>Pieces of my journey, things I've learned, and the words that tell my story.</p>
+            <span class="card-link">Read the stories ↗</span>
+          </a>
+
+          <a class="page-card" href="wishes.html">
+            <span class="card-icon" aria-hidden="true">✿</span>
+            <h3>Wishes</h3>
+            <p>Birthday love, kind words, and little notes from the people who make life brighter.</p>
+            <span class="card-link">Leave a little love ↗</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="closing-note">
+        <p>Still growing, still dreaming, still becoming ♡</p>
+      </section>
+    </main>
+
+    <footer>
+      Made with love, for this chapter and every chapter after it.
+      <br>© <span id="year"></span> A Little Book of Dominion
+    </footer>
   </div>
 
-  <div class="paper-note">
-    <div class="label" id="countdown-heading">A new chapter begins in</div>
-    <div id="countdown">
-      <div><span class="time-number" id="days">00</span><span class="time-unit">Days</span></div>
-      <div><span class="time-number" id="hours">00</span><span class="time-unit">Hours</span></div>
-      <div><span class="time-number" id="minutes">00</span><span class="time-unit">Minutes</span></div>
-      <div><span class="time-number" id="seconds">00</span><span class="time-unit">Seconds</span></div>
-    </div>
-    <p id="countdown-message">Counting down to October 16, 2026.</p>
-  </div>
+  <script>
+    const birthday = new Date(2026, 9, 16, 0, 0, 0);
 
-  <a class="button" href="#memories">Wander through my little world ↗</a>
-</section>
+    function updateCountdown() {
+      const now = new Date();
+      const remaining = birthday.getTime() - now.getTime();
 
-<section class="section" id="memories">
-  <div class="section-label">Pages from my life</div>
-  <h2>Little pieces of me</h2>
-  <p class="description">Some moments deserve a page of their own. This little book is where the laughter, the lessons, and the lovely people get to stay.</p>
+      if (remaining <= 0) {
+        document.getElementById("countdown-title").textContent =
+          "Today is my day ♡";
+        document.getElementById("countdown-note").textContent =
+          "A new chapter, another year, and so much to be grateful for.";
 
-  <div class="memory-collage">
-    <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80" alt="Flowers">
-    <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=400&q=80" alt="Sunset">
-    <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=400&q=80" alt="Friends together">
-  </div>
+        ["days", "hours", "minutes", "seconds"].forEach(id => {
+          document.getElementById(id).textContent = "00";
+        });
+        return;
+      }
 
-  <div class="feature-grid">
-    <a class="feature" href="#photos">
-      <div class="feature-icon">♡</div>
-      <h3>Polaroids & moments</h3>
-      <p>Snapshots and memories worth keeping.</p>
-    </a>
-    <a class="feature" href="#videos">
-      <div class="feature-icon">▷</div>
-      <h3>Little films</h3>
-      <p>Videos and tiny moments worth replaying.</p>
-    </a>
-    <a class="feature" href="#stories">
-      <div class="feature-icon">✎</div>
-      <h3>My stories</h3>
-      <p>Chapters written in my own voice.</p>
-    </a>
-    <a class="feature" href="#wishes">
-      <div class="feature-icon">☆</div>
-      <h3>Letters to remember</h3>
-      <p>Sweet messages from my favourite people.</p>
-    </a>
-  </div>
-</section>
+      const days = Math.floor(remaining / 86400000);
+      const hours = Math.floor((remaining % 86400000) / 3600000);
+      const minutes = Math.floor((remaining % 3600000) / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
 
-<section class="section" id="photos">
-  <div class="section-label">Frozen in time</div>
-  <h2>Polaroids & moments</h2>
-  <p class="description">This wall is waiting for photographs from my life.</p>
-</section>
+      document.getElementById("days").textContent = String(days).padStart(2, "0");
+      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+    }
 
-<section class="section" id="videos">
-  <div class="section-label">Press play on a memory</div>
-  <h2>Little films</h2>
-  <p class="description">A little collection of videos, happy moments, and memories in motion.</p>
-</section>
-
-<section class="section" id="stories">
-  <div class="section-label">A note to myself</div>
-  <h2>The story is still unfolding</h2>
-  <div class="quote">“Here is to everything I have been, everything I am becoming, and all the beautiful things I have yet to discover.” ♡</div>
-  <p class="description">This page will soon hold stories from my life, in my own words.</p>
-</section>
-
-<section class="section" id="wishes">
-  <div class="section-label">A little love, collected</div>
-  <h2>Leave a little sparkle</h2>
-  <p class="description">A place for birthday wishes, sweet messages, and memories from the people in my world. The interactive message book is coming next.</p>
-  <div class="quote">If you are reading this, you are part of this little chapter too. ♡</div>
-</section>
-</main>
-
-<footer>
-  MADE WITH LOVE, A LITTLE DREAMING & LOTS OF HEART ♡<br>
-  © 2026 · A LITTLE BOOK OF DOMINION
-</footer>
-
-<script>
-const birthday = new Date(2026, 9, 16, 0, 0, 0);
-
-function updateCountdown() {
-  const difference = birthday.getTime() - new Date().getTime();
-  const heading = document.getElementById("countdown-heading");
-  const countdown = document.getElementById("countdown");
-  const message = document.getElementById("countdown-message");
-
-  if (difference <= 0) {
-    heading.textContent = "Today, a new chapter blooms";
-    countdown.classList.add("hidden");
-    message.textContent = "Happy birthday, Dominion! Your next chapter starts here. ✿";
-    return;
-  }
-
-  document.getElementById("days").textContent =
-    String(Math.floor(difference / 86400000)).padStart(2, "0");
-  document.getElementById("hours").textContent =
-    String(Math.floor((difference % 86400000) / 3600000)).padStart(2, "0");
-  document.getElementById("minutes").textContent =
-    String(Math.floor((difference % 3600000) / 60000)).padStart(2, "0");
-  document.getElementById("seconds").textContent =
-    String(Math.floor((difference % 60000) / 1000)).padStart(2, "0");
-}
-
-updateCountdown();
-setInterval(updateCountdown, 1000);
-</script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
- 
