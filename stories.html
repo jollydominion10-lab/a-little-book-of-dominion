@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stories | A Little Book of Dominion</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #fffaf4;
+      --paper: #fffdf9;
+      --pink: #e9a8b8;
+      --dark-pink: #bd7188;
+      --brown: #493a38;
+      --muted: #897875;
+      --line: #f0e2da;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--brown);
+      font-family: "DM Sans", sans-serif;
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .top-note {
+      background: #f8e8e9;
+      color: #815866;
+      text-align: center;
+      padding: 10px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    header {
+      padding: 22px 15px 14px;
+      text-align: center;
+    }
+
+    .brand {
+      font-family: "Playfair Display", serif;
+      font-size: 23px;
+      font-weight: 600;
+    }
+
+    .brand span {
+      color: var(--dark-pink);
+      font-style: italic;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 22px;
+      padding: 14px 12px 20px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    nav a {
+      color: var(--muted);
+    }
+
+    nav a.active {
+      color: var(--dark-pink);
+      font-weight: 700;
+    }
+
+    main {
+      width: min(100% - 36px, 680px);
+      margin: auto;
+    }
+
+    .intro {
+      padding: 48px 0 30px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: #f5dce2;
+      color: #965d70;
+      padding: 5px 13px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transform: rotate(-2deg);
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: clamp(37px, 9vw, 58px);
+      letter-spacing: -1.5px;
+    }
+
+    h1 span {
+      color: var(--dark-pink);
+      font-style: italic;
+    }
+
+    .intro p {
+      max-width: 420px;
+      margin: 17px auto 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section-label {
+      display: block;
+      color: var(--dark-pink);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .story-section {
+      margin: 14px 0 32px;
+    }
+
+    .story-section h2 {
+      font-size: 29px;
+      margin-bottom: 15px;
+    }
+
+    .paper {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 22px 19px;
+      margin-bottom: 15px;
+      box-shadow: 0 8px 22px #6e514008;
+    }
+
+    .paper h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .paper p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .quote {
+      border-left: 3px solid var(--pink);
+      padding-left: 15px;
+      margin-top: 15px;
+      color: var(--brown);
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-size: 16px;
+    }
+
+    .form-card {
+      position: relative;
+      background: #f9eceb;
+      border-radius: 8px;
+      padding: 24px 19px;
+      margin: 16px 0 45px;
+    }
+
+    .tape {
+      position: absolute;
+      width: 62px;
+      height: 18px;
+      background: #e9b9c5bb;
+      top: -8px;
+      right: 28px;
+      transform: rotate(4deg);
+    }
+
+    .form-card h2 {
+      font-size: 25px;
+      margin-bottom: 7px;
+    }
+
+    .form-card > p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      display: block;
+      width: 100%;
+      border: 1px solid #ead6d2;
+      background: #fffdf9;
+      border-radius: 5px;
+      padding: 12px;
+      color: var(--brown);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    textarea {
+      min-height: 125px;
+      resize: vertical;
+    }
+
+    .button {
+      background: var(--dark-pink);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 12px 18px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .notice {
+      font-size: 11px !important;
+      margin-top: 12px;
+      margin-bottom: 0 !important;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding: 26px 15px 35px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .footer span {
+      color: var(--dark-pink);
+    }
+
+    @media (max-width: 360px) {
+      nav {
+        gap: 14px;
+      }
+
+      .paper, .form-card {
+        padding: 19px 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-note">A birthday scrapbook · October 16</div>
+
+  <header>
+    <a class="brand" href="index.html">A Little Book <span>of Dominion</span></a>
+  </header>
+
+  <nav aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="memories.html">Memories</a>
+    <a class="active" href="stories.html">Stories</a>
+    <a href="wishes.html">Wishes</a>
+  </nav>
+
+  <main>
+    <section class="intro">
+      <span class="eyebrow">Pages from our little world</span>
+      <h1>Every life has <span>a story</span></h1>
+      <p>
+        Some stories make us laugh until our stomachs hurt.
+        Some remind us how far we've come. And some are precious simply
+        because we shared them with someone we love.
+      </p>
+    </section>
+
+    <section class="story-section">
+      <span class="section-label">Chapter one · My world</span>
+      <h2>A little about me</h2>
+
+      <article class="paper">
+        <h3>The story is still unfolding ♡</h3>
+        <p>
+          This is my little corner of the book, where I can collect
+          thoughts, favourite moments, lessons, dreams, and the little
+          things that make my story mine.
+        </p>
+        <p class="quote">
+          "I'm still becoming, still learning, and still collecting
+          beautiful reasons to be grateful."
+        </p>
+      </article>
+
+      <article class="paper">
+        <h3>More chapters to come</h3>
+        <p>
+          As life happens, this space can grow with me. One day it might
+          hold a funny story, another day a lesson I never want to forget,
+          or a moment that changed the way I see the world.
+        </p>
+      </article>
+    </section>
+
+    <section class="story-section">
+      <span class="section-label">Chapter two · Through your eyes</span>
+      <h2>Your stories about me</h2>
+
+      <article class="paper">
+        <h3>Do you remember that time?</h3>
+        <p>
+          Have we shared a hilarious moment, an unexpected adventure,
+          a heart-to-heart conversation, or a memory you still talk about?
+          I want to hear your version of the story.
+        </p>
+      </article>
+    </section>
+
+    <section class="form-card">
+      <div class="tape"></div>
+      <h2>Write me a little story</h2>
+      <p>
+        Add your name and share a story about us. Keep it kind,
+        personal, and something you'd be happy for me to read.
+      </p>
+
+      <form id="storyForm">
+        <div class="field">
+          <label for="storyName">Your name</label>
+          <input id="storyName" type="text" placeholder="Your name or nickname" required>
+        </div>
+
+        <div class="field">
+          <label for="storyTitle">Give your story a title</label>
+          <input id="storyTitle" type="text" placeholder="e.g. The day we couldn't stop laughing" required>
+        </div>
+
+        <div class="field">
+          <label for="storyText">Your story</label>
+          <textarea id="storyText" placeholder="Start wherever you like..." required></textarea>
+        </div>
+
+        <button class="button" type="submit">♡ Submit your story</button>
+
+        <p id="storyMessage" class="notice" role="status" aria-live="polite">
+          Stories will need to be reviewed before being displayed publicly.
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Made with <span>♡</span> for a life full of stories.<br>
+    © 2026 A Little Book of Dominion
+  </footer>
+
+  <script>
+    document.getElementById("storyForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      document.getElementById("storyMessage").textContent =
+        "The form is designed, but saving stories is not connected yet. Your story has NOT been uploaded or saved. We'll connect the database before accepting real submissions.";
+
+      document.getElementById("storyMessage").style.color = "#9b536b";
+    });
+  </script>
+</body>
+      </html>
+      
