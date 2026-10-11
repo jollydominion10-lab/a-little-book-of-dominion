@@ -1,3 +1,3 @@
 
-const SUPABASE_URL = "https://ybtsyeeefjdaiaqgffkd.supabase.co/rest/v1/";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ADF2xy29ERIwtRt-vfYj5g_c3_GCydB";
+window.SUPABASE_URL = "YOUR_PROJECT_URL";
+window.SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
