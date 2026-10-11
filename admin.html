@@ -130,7 +130,133 @@
       }
 
       message.textContent = "Sign-in successful! Your connection is working.";
+    
+const photoManager = document.getElementById("photoManager");
+const photoForm = document.getElementById("photoForm");
+const uploadMessage = document.getElementById("uploadMessage");
+const photoList = document.getElementById("photoList");
+
+// Show the photo manager only after admin sign-in.
+async function checkAdminSession() {
+  const { data: { session } } = await client.auth.getSession();
+
+  if (session) {
+    photoManager.hidden = false;
+    await loadMemories();
+  }
+}
+
+async function loadMemories() {
+  photoList.replaceChildren();
+
+  const { data, error } = await client
+    .from("site_content")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    uploadMessage.textContent = "Could not load memories: " + error.message;
+    return;
+  }
+
+  for (const memory of data) {
+    const item = document.createElement("div");
+    item.style.marginTop = "16px";
+
+    const caption = document.createElement("p");
+    caption.textContent = memory.caption || "Untitled memory";
+
+    item.appendChild(caption);
+
+    if (memory.image_path) {
+      const { data: imageData } = client.storage
+        .from("site-images")
+        .getPublicUrl(memory.image_path);
+
+      const image = document.createElement("img");
+      image.src = imageData.publicUrl;
+      image.alt = memory.caption || "Memory photo";
+      image.style.width = "100%";
+      image.style.maxWidth = "320px";
+      image.style.borderRadius = "12px";
+
+      item.prepend(image);
+    }
+
+    photoList.appendChild(item);
+  }
+}
+
+photoForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const { data: { session } } = await client.auth.getSession();
+
+  if (!session) {
+    uploadMessage.textContent = "Please sign in first.";
+    photoManager.hidden = true;
+    return;
+  }
+
+  const file = document.getElementById("photo").files[0];
+  const caption = document.getElementById("caption").value.trim();
+
+  if (!file || !caption) {
+    uploadMessage.textContent = "Choose a photo and enter a caption.";
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    uploadMessage.textContent = "Please choose an image file.";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    uploadMessage.textContent = "Please choose an image smaller than 5 MB.";
+    return;
+  }
+
+  uploadMessage.textContent = "Uploading your memory...";
+
+  const filePath = `${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+  const { error: storageError } = await client.storage
+    .from("site-images")
+    .upload(filePath, file, { contentType: file.type });
+
+  if (storageError) {
+    uploadMessage.textContent = "Photo upload failed: " + storageError.message;
+    return;
+  }
+
+  const { error: databaseError } = await client
+    .from("site_content")
+    .insert({
+      content_key: "memory",
+      image_path: filePath,
+      caption
     });
+
+  if (databaseError) {
+    uploadMessage.textContent =
+      "The photo uploaded, but saving its caption failed: " +
+      databaseError.message;
+    return;
+  }
+
+  photoForm.reset();
+  uploadMessage.textContent = "Memory saved successfully! ♡";
+  await loadMemories();
+});
+
+document.getElementById("signOut").addEventListener("click", async () => {
+  await client.auth.signOut();
+  photoManager.hidden = true;
+  uploadMessage.textContent = "You have signed out.";
+});
+
+checkAdminSession();
+
   </script>
 </body>
 </html>
