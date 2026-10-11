@@ -78,8 +78,9 @@
     <script src="supabase-config.js"></script>
     <script>
       const client = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+  window.SUPABASE_URL,
+  window.SUPABASE_PUBLISHABLE_KEY
+);
       );
 
       document.getElementById("signIn").addEventListener("click", async () => {
