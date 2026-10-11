@@ -73,5 +73,37 @@
       <p>Next, we'll add photo uploads, caption editing and approval controls here.</p>
     </div>
   </main>
+  
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+      const client = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+      document.getElementById("signIn").addEventListener("click", async () => {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const message = document.getElementById("message");
+
+        message.textContent = "Signing in...";
+
+        const { data, error } = await client.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          message.textContent = "Sign-in failed: " + error.message;
+          return;
+        }
+
+        message.textContent = "You're signed in! Next, we'll add the content controls.";
+      });
+    </script>
+  </body>
+</html>
+
 </body>
 </html>
