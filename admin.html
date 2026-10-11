@@ -68,10 +68,32 @@
       <p class="note">Sign in to manage your website.</p>
     </div>
 
-    <div class="card">
-      <h2>Your content</h2>
-      <p>Photo uploads, caption editing and approval controls will be added next.</p>
-    </div>
+   
+<div class="card" id="photoManager" hidden>
+  <h2>Your memories</h2>
+  <p>Upload a photo and give it a caption.</p>
+
+  <form id="photoForm">
+    <label for="photo">Choose a photo</label>
+    <input id="photo" type="file" accept="image/*" required>
+
+    <label for="caption">Photo caption</label>
+    <input
+      id="caption"
+      type="text"
+      placeholder="Write a little caption..."
+      maxlength="200"
+      required
+    >
+
+    <button type="submit">Upload memory ♡</button>
+  </form>
+
+  <p id="uploadMessage" role="status"></p>
+  <div id="photoList"></div>
+
+  <button id="signOut" type="button">Sign out</button>
+</div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
