@@ -65,46 +65,50 @@
       <input id="password" type="password" placeholder="Password">
       <button id="signIn">Sign in</button>
       <p id="message" role="status"></p>
-      <p class="note">The sign-in button will work after we connect Supabase.</p>
+      <p class="note">Sign in to manage your website.</p>
     </div>
 
     <div class="card">
       <h2>Your content</h2>
-      <p>Next, we'll add photo uploads, caption editing and approval controls here.</p>
+      <p>Photo uploads, caption editing and approval controls will be added next.</p>
     </div>
   </main>
-  
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script>
-      const client = window.supabase.createClient(
-  window.SUPABASE_URL,
-  window.SUPABASE_PUBLISHABLE_KEY
-);
-      );
 
-      document.getElementById("signIn").addEventListener("click", async () => {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const message = document.getElementById("message");
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    const client = window.supabase.createClient(
+      window.SUPABASE_URL,
+      window.SUPABASE_PUBLISHABLE_KEY
+    );
 
-        message.textContent = "Signing in...";
+    document.getElementById("message").textContent =
+      "Supabase client loaded. Ready to test sign-in.";
 
-        const { data, error } = await client.auth.signInWithPassword({
-          email,
-          password
-        });
+    document.getElementById("signIn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
 
-        if (error) {
-          message.textContent = "Sign-in failed: " + error.message;
-          return;
-        }
+      if (!email || !password) {
+        message.textContent = "Please enter your admin email and password.";
+        return;
+      }
 
-        message.textContent = "You're signed in! Next, we'll add the content controls.";
+      message.textContent = "Signing in...";
+
+      const { error } = await client.auth.signInWithPassword({
+        email,
+        password
       });
-    </script>
-  </body>
-</html>
 
+      if (error) {
+        message.textContent = "Sign-in failed: " + error.message;
+        return;
+      }
+
+      message.textContent = "Sign-in successful! Your connection is working.";
+    });
+  </script>
 </body>
 </html>
