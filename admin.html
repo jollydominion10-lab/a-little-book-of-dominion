@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +35,10 @@
       font-weight: normal;
     }
 
-    p { line-height: 1.6; }
+    p {
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
 
     input, button, .link-button {
       width: 100%;
@@ -87,6 +90,7 @@
       object-fit: contain;
       border-radius: 12px;
       background: #f2e8e2;
+      margin-top: 12px;
     }
 
     .actions {
@@ -102,6 +106,12 @@
       border-radius: 12px;
       background: #f6ece6;
     }
+
+    .section-heading {
+      margin-top: 30px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eadbd3;
+    }
   </style>
 </head>
 
@@ -110,7 +120,7 @@
     <div class="card">
       <p>♡ A LITTLE BOOK OF DOMINION</p>
       <h1>Admin Studio</h1>
-      <p>Your private corner for looking after the memories shared by visitors.</p>
+      <p>Your private corner for looking after the memories and stories shared by visitors.</p>
     </div>
 
     <div class="card" id="loginCard">
@@ -143,22 +153,34 @@
 
     <div class="card" id="adminPanel" hidden>
       <h2>Welcome back ♡</h2>
-      <p>Review each visitor submission before it appears in your public gallery.</p>
+      <p>Review visitor submissions before they appear publicly.</p>
 
       <a class="link-button" href="memories.html">View Memories Page</a>
+      <a class="link-button" href="stories.html">View Stories Page</a>
 
       <button type="button" id="refreshButton" class="secondary">
-        Refresh submissions
+        Refresh all submissions
       </button>
 
-      <p id="panelMessage" class="status" role="status"></p>
+      <p id="panelMessage" class="status" role="status" aria-live="polite"></p>
 
-      <h2>Pending memories</h2>
+      <h2 class="section-heading">Pending memories</h2>
       <div id="submissions">
         <p>Loading submissions...</p>
       </div>
 
-      <button type="button" id="signOut" class="secondary">Sign out</button>
+      <h2 class="section-heading">Pending stories</h2>
+      <p class="note">
+        Approved stories will appear on the public Stories page.
+        Rejected stories will remain unpublished.
+      </p>
+      <div id="pendingStories">
+        <p>Loading stories...</p>
+      </div>
+
+      <button type="button" id="signOut" class="secondary">
+        Sign out
+      </button>
     </div>
   </main>
 
@@ -166,311 +188,468 @@
   <script src="supabase-config.js"></script>
 
   <script>
-    const client = window.supabase.createClient(
-      window.SUPABASE_URL,
-      window.SUPABASE_PUBLISHABLE_KEY
-    );
-
-    const loginCard = document.getElementById("loginCard");
-    const adminPanel = document.getElementById("adminPanel");
-    const loginForm = document.getElementById("loginForm");
-    const message = document.getElementById("message");
-    const panelMessage = document.getElementById("panelMessage");
-    const submissionsBox = document.getElementById("submissions");
-
-    function isVideo(item) {
-      if (item.file_type === "video") return true;
-
-      const extension = item.file_path
-        .split(".")
-        .pop()
-        .toLowerCase();
-
-      return ["mp4", "mov", "webm", "m4v"].includes(extension);
-    }
-
-    async function updatePage() {
-      const { data, error } = await client.auth.getSession();
-
-      if (error) {
-        message.textContent = "Could not check session: " + error.message;
+    (() => {
+      if (
+        !window.supabase ||
+        !window.SUPABASE_URL ||
+        !window.SUPABASE_PUBLISHABLE_KEY
+      ) {
+        document.getElementById("message").textContent =
+          "Supabase configuration could not be loaded. Check supabase-config.js.";
+        document.getElementById("signIn").disabled = true;
         return;
       }
 
-      const session = data.session;
-      loginCard.hidden = Boolean(session);
-      adminPanel.hidden = !session;
-
-      if (session) {
-        await loadSubmissions();
-      }
-    }
-
-    loginForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      message.textContent = "Signing in...";
-
-      const { error } = await client.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        message.textContent = "Sign-in failed: " + error.message;
-        return;
-      }
-
-      message.textContent = "";
-      await updatePage();
-    });
-
-    async function loadSubmissions() {
-      submissionsBox.replaceChildren();
-      panelMessage.textContent = "Loading pending submissions...";
-
-      const { data, error } = await client
-        .from("memory_submissions")
-        .select("id, created_at, contributor, caption, file_path, file_type, status")
-        .eq("status", "pending")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        panelMessage.textContent =
-          "Could not load submissions: " + error.message;
-        submissionsBox.textContent =
-          "Check your admin permissions and database policies.";
-        return;
-      }
-
-      panelMessage.textContent = "";
-
-      if (!data || data.length === 0) {
-        submissionsBox.innerHTML =
-          '<p class="empty">No pending memories right now. ♡</p>';
-        return;
-      }
-
-      for (const item of data) {
-        const card = document.createElement("article");
-        card.className = "submission";
-
-        const heading = document.createElement("h3");
-        heading.textContent = item.contributor || "Anonymous visitor";
-
-        const caption = document.createElement("p");
-        caption.textContent = item.caption || "A little memory ♡";
-
-        const date = document.createElement("p");
-        date.className = "note";
-        date.textContent = new Date(item.created_at).toLocaleString();
-
-        const typeLabel = document.createElement("p");
-        typeLabel.className = "note";
-        typeLabel.textContent = isVideo(item)
-          ? "Submitted video"
-          : "Submitted photo";
-
-        card.append(heading, caption, date, typeLabel);
-
-        const { data: fileData, error: fileError } =
-          await client.storage
-            .from("memory-submissions")
-            .createSignedUrl(item.file_path, 300);
-
-        if (fileData && !fileError) {
-          let media;
-
-          if (isVideo(item)) {
-            media = document.createElement("video");
-            media.controls = true;
-            media.preload = "metadata";
-            media.playsInline = true;
-          } else {
-            media = document.createElement("img");
-            media.alt = "Photo submitted by " + heading.textContent;
-          }
-
-          media.src = fileData.signedUrl;
-          card.append(media);
-        } else {
-          const warning = document.createElement("p");
-          warning.textContent =
-            "Private preview could not be loaded. " +
-            (fileError ? fileError.message : "");
-          card.append(warning);
-        }
-
-        const actions = document.createElement("div");
-        actions.className = "actions";
-
-        const approveButton = document.createElement("button");
-        approveButton.textContent = "Approve";
-
-        const rejectButton = document.createElement("button");
-        rejectButton.textContent = "Reject";
-        rejectButton.className = "reject";
-
-        approveButton.addEventListener("click", () => {
-          approveSubmission(item, approveButton, rejectButton);
-        });
-
-        rejectButton.addEventListener("click", () => {
-          rejectSubmission(item, approveButton, rejectButton);
-        });
-
-        actions.append(approveButton, rejectButton);
-        card.append(actions);
-        submissionsBox.append(card);
-      }
-    }
-
-    async function approveSubmission(item, approveButton, rejectButton) {
-      const video = isVideo(item);
-      const mediaName = video ? "video" : "photo";
-
-      const confirmed = confirm(
-        "Approve this " + mediaName +
-        " and publish it in the public Memories gallery?"
+      const client = window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_PUBLISHABLE_KEY
       );
 
-      if (!confirmed) return;
+      const loginCard = document.getElementById("loginCard");
+      const adminPanel = document.getElementById("adminPanel");
+      const loginForm = document.getElementById("loginForm");
+      const message = document.getElementById("message");
+      const panelMessage = document.getElementById("panelMessage");
+      const submissionsBox = document.getElementById("submissions");
+      const pendingStoriesBox = document.getElementById("pendingStories");
+      const refreshButton = document.getElementById("refreshButton");
+      const signOutButton = document.getElementById("signOut");
 
-      approveButton.disabled = true;
-      rejectButton.disabled = true;
-      panelMessage.textContent = "Publishing " + mediaName + "...";
+      function setPanelMessage(text) {
+        panelMessage.textContent = text;
+      }
 
-      let publicPath = null;
-      let contentInserted = false;
+      function makeEmptyMessage(text) {
+        const paragraph = document.createElement("p");
+        paragraph.className = "empty";
+        paragraph.textContent = text;
+        return paragraph;
+      }
 
-      try {
-        const { data: file, error: downloadError } =
-          await client.storage
-            .from("memory-submissions")
-            .download(item.file_path);
+      function isVideo(item) {
+        if (item.file_type === "video") return true;
 
-        if (downloadError) throw downloadError;
+        const extension = item.file_path
+          .split(".")
+          .pop()
+          .toLowerCase();
 
-        const extension = item.file_path.includes(".")
-          ? item.file_path.split(".").pop().replace(/[^a-zA-Z0-9]/g, "").toLowerCase()
-          : (video ? "mp4" : "jpg");
+        return ["mp4", "mov", "webm", "m4v"].includes(extension);
+      }
 
-        publicPath = "approved-" + item.id + "." + extension;
+      async function updatePage() {
+        const { data, error } = await client.auth.getSession();
 
-        const contentType = file.type ||
-          (video ? "video/mp4" : "image/jpeg");
-
-        const { error: uploadError } = await client.storage
-          .from("site-images")
-          .upload(publicPath, file, {
-            upsert: true,
-            contentType
-          });
-
-        if (uploadError) throw uploadError;
-
-        const { error: insertError } = await client
-          .from("site_content")
-          .insert({
-            content_key: "memory",
-            image_path: publicPath,
-            caption: item.caption
-          });
-
-        if (insertError) throw insertError;
-
-        contentInserted = true;
-
-        const { error: updateError } = await client
-          .from("memory_submissions")
-          .update({ status: "approved" })
-          .eq("id", item.id)
-          .eq("status", "pending");
-
-        if (updateError) {
-          panelMessage.textContent =
-            "The " + mediaName +
-            " was published, but its submission status could not be updated. " +
-            updateError.message +
-            ". Check Supabase before trying again.";
-          await loadSubmissions();
+        if (error) {
+          message.textContent =
+            "Could not check session: " + error.message;
           return;
         }
 
-        panelMessage.textContent =
-          "The " + mediaName + " was approved and published successfully! ♡";
+        const session = data.session;
+        loginCard.hidden = Boolean(session);
+        adminPanel.hidden = !session;
 
-        await loadSubmissions();
+        if (session) {
+          await Promise.all([
+            loadSubmissions(),
+            loadPendingStories()
+          ]);
+        }
+      }
 
-      } catch (error) {
-        console.error("Approval error:", error);
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-        if (publicPath && !contentInserted) {
-          await client.storage.from("site-images").remove([publicPath]);
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const signInButton = document.getElementById("signIn");
+
+        signInButton.disabled = true;
+        message.textContent = "Signing in...";
+
+        try {
+          const { error } = await client.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) {
+            message.textContent = "Sign-in failed: " + error.message;
+            return;
+          }
+
+          message.textContent = "";
+          await updatePage();
+        } catch (error) {
+          message.textContent =
+            "Sign-in failed: " + (error.message || String(error));
+        } finally {
+          signInButton.disabled = false;
+        }
+      });
+
+      // MEMORY SUBMISSIONS
+      async function loadSubmissions() {
+        submissionsBox.replaceChildren();
+        submissionsBox.textContent = "Loading submissions...";
+
+        const { data, error } = await client
+          .from("memory_submissions")
+          .select("id, created_at, contributor, caption, file_path, file_type, status")
+          .eq("status", "pending")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          submissionsBox.textContent =
+            "Could not load memories: " + error.message;
+          return;
         }
 
-        panelMessage.textContent =
-          "Approval failed: " + (error.message || String(error)) +
-          ". Check Supabase permissions and the bucket size limit.";
+        submissionsBox.replaceChildren();
 
-        approveButton.disabled = false;
-        rejectButton.disabled = false;
+        if (!data || data.length === 0) {
+          submissionsBox.appendChild(
+            makeEmptyMessage("No pending memories right now. ♡")
+          );
+          return;
+        }
+
+        for (const item of data) {
+          const card = document.createElement("article");
+          card.className = "submission";
+
+          const heading = document.createElement("h3");
+          heading.textContent = item.contributor || "Anonymous visitor";
+
+          const caption = document.createElement("p");
+          caption.textContent = item.caption || "A little memory ♡";
+
+          const date = document.createElement("p");
+          date.className = "note";
+          date.textContent = new Date(item.created_at).toLocaleString();
+
+          const typeLabel = document.createElement("p");
+          typeLabel.className = "note";
+          typeLabel.textContent = isVideo(item)
+            ? "Submitted video"
+            : "Submitted photo";
+
+          card.append(heading, caption, date, typeLabel);
+
+          const { data: fileData, error: fileError } =
+            await client.storage
+              .from("memory-submissions")
+              .createSignedUrl(item.file_path, 300);
+
+          if (fileData && !fileError) {
+            let media;
+
+            if (isVideo(item)) {
+              media = document.createElement("video");
+              media.controls = true;
+              media.preload = "metadata";
+              media.playsInline = true;
+            } else {
+              media = document.createElement("img");
+              media.alt = "Photo submitted by " + heading.textContent;
+            }
+
+            media.src = fileData.signedUrl;
+            card.appendChild(media);
+          } else {
+            const warning = document.createElement("p");
+            warning.textContent =
+              "Private preview could not be loaded. " +
+              (fileError ? fileError.message : "");
+            card.appendChild(warning);
+          }
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          const approveButton = document.createElement("button");
+          approveButton.textContent = "Approve";
+
+          const rejectButton = document.createElement("button");
+          rejectButton.textContent = "Reject";
+          rejectButton.className = "reject";
+
+          approveButton.addEventListener("click", () => {
+            approveSubmission(item, approveButton, rejectButton);
+          });
+
+          rejectButton.addEventListener("click", () => {
+            rejectSubmission(item, approveButton, rejectButton);
+          });
+
+          actions.append(approveButton, rejectButton);
+          card.appendChild(actions);
+          submissionsBox.appendChild(card);
+        }
       }
-    }
 
-    async function rejectSubmission(item, approveButton, rejectButton) {
-      const confirmed = confirm(
-        "Reject this submission? It will not be added to the public gallery."
-      );
+      async function approveSubmission(item, approveButton, rejectButton) {
+        const video = isVideo(item);
+        const mediaName = video ? "video" : "photo";
 
-      if (!confirmed) return;
+        if (!confirm(
+          "Approve this " + mediaName +
+          " and publish it in the public Memories gallery?"
+        )) return;
 
-      approveButton.disabled = true;
-      rejectButton.disabled = true;
-      panelMessage.textContent = "Rejecting submission...";
+        approveButton.disabled = true;
+        rejectButton.disabled = true;
+        setPanelMessage("Publishing " + mediaName + "...");
 
-      const { error } = await client
-        .from("memory_submissions")
-        .update({ status: "rejected" })
-        .eq("id", item.id)
-        .eq("status", "pending");
+        let publicPath = null;
+        let contentInserted = false;
 
-      if (error) {
-        panelMessage.textContent = "Rejection failed: " + error.message;
-        approveButton.disabled = false;
-        rejectButton.disabled = false;
-        return;
+        try {
+          const { data: file, error: downloadError } =
+            await client.storage
+              .from("memory-submissions")
+              .download(item.file_path);
+
+          if (downloadError) throw downloadError;
+
+          const extension = item.file_path.includes(".")
+            ? item.file_path.split(".").pop()
+                .replace(/[^a-zA-Z0-9]/g, "").toLowerCase()
+            : (video ? "mp4" : "jpg");
+
+          publicPath = "approved-" + item.id + "." + extension;
+
+          const contentType = file.type ||
+            (video ? "video/mp4" : "image/jpeg");
+
+          const { error: uploadError } = await client.storage
+            .from("site-images")
+            .upload(publicPath, file, {
+              upsert: true,
+              contentType
+            });
+
+          if (uploadError) throw uploadError;
+
+          const { error: insertError } = await client
+            .from("site_content")
+            .insert({
+              content_key: "memory",
+              image_path: publicPath,
+              caption: item.caption
+            });
+
+          if (insertError) throw insertError;
+
+          contentInserted = true;
+
+          const { error: updateError } = await client
+            .from("memory_submissions")
+            .update({ status: "approved" })
+            .eq("id", item.id)
+            .eq("status", "pending");
+
+          if (updateError) {
+            setPanelMessage(
+              "Published, but status update failed: " + updateError.message
+            );
+            await loadSubmissions();
+            return;
+          }
+
+          setPanelMessage(
+            "The " + mediaName + " was approved and published successfully! ♡"
+          );
+
+          await loadSubmissions();
+        } catch (error) {
+          console.error("Approval error:", error);
+
+          if (publicPath && !contentInserted) {
+            await client.storage.from("site-images").remove([publicPath]);
+          }
+
+          setPanelMessage(
+            "Approval failed: " + (error.message || String(error))
+          );
+
+          approveButton.disabled = false;
+          rejectButton.disabled = false;
+        }
       }
 
-      panelMessage.textContent = "Submission rejected.";
-      await loadSubmissions();
-    }
+      async function rejectSubmission(item, approveButton, rejectButton) {
+        if (!confirm(
+          "Reject this submission? It will not be added to the public gallery."
+        )) return;
 
-    document.getElementById("refreshButton").addEventListener(
-      "click", loadSubmissions
-    );
+        approveButton.disabled = true;
+        rejectButton.disabled = true;
+        setPanelMessage("Rejecting submission...");
 
-    document.getElementById("signOut").addEventListener("click", async () => {
-      panelMessage.textContent = "Signing out...";
+        const { error } = await client
+          .from("memory_submissions")
+          .update({ status: "rejected" })
+          .eq("id", item.id)
+          .eq("status", "pending");
 
-      const { error } = await client.auth.signOut();
+        if (error) {
+          setPanelMessage("Rejection failed: " + error.message);
+          approveButton.disabled = false;
+          rejectButton.disabled = false;
+          return;
+        }
 
-      if (error) {
-        panelMessage.textContent = "Sign-out failed: " + error.message;
-        return;
+        setPanelMessage("Submission rejected.");
+        await loadSubmissions();
       }
 
-      loginForm.reset();
-      message.textContent = "You have signed out.";
-      panelMessage.textContent = "";
-      await updatePage();
-    });
+      // STORY SUBMISSIONS
+      async function loadPendingStories() {
+        pendingStoriesBox.replaceChildren();
+        pendingStoriesBox.textContent = "Loading stories...";
 
-    updatePage();
+        const { data, error } = await client
+          .from("stories")
+          .select("id, created_at, contributor, title, body")
+          .eq("status", "pending")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          pendingStoriesBox.replaceChildren();
+          pendingStoriesBox.appendChild(
+            makeEmptyMessage(
+              "Could not load stories. Check your Stories table permissions. " +
+              error.message
+            )
+          );
+          return;
+        }
+
+        pendingStoriesBox.replaceChildren();
+
+        if (!data || data.length === 0) {
+          pendingStoriesBox.appendChild(
+            makeEmptyMessage("No pending stories right now. ♡")
+          );
+          return;
+        }
+
+        for (const story of data) {
+          const card = document.createElement("article");
+          card.className = "submission";
+
+          const title = document.createElement("h3");
+          title.textContent = story.title;
+
+          const author = document.createElement("p");
+          author.textContent = "From: " + story.contributor;
+
+          const date = document.createElement("p");
+          date.className = "note";
+          date.textContent = new Date(story.created_at).toLocaleString();
+
+          const body = document.createElement("p");
+          body.style.whiteSpace = "pre-wrap";
+          body.textContent = story.body;
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          const approveButton = document.createElement("button");
+          approveButton.textContent = "Approve";
+
+          const rejectButton = document.createElement("button");
+          rejectButton.textContent = "Reject";
+          rejectButton.className = "reject";
+
+          approveButton.addEventListener("click", () => {
+            setStoryStatus(story, "approved", approveButton, rejectButton);
+          });
+
+          rejectButton.addEventListener("click", () => {
+            setStoryStatus(story, "rejected", approveButton, rejectButton);
+          });
+
+          actions.append(approveButton, rejectButton);
+          card.append(title, author, date, body, actions);
+          pendingStoriesBox.appendChild(card);
+        }
+      }
+
+      async function setStoryStatus(
+        story, status, approveButton, rejectButton
+      ) {
+        const action = status === "approved" ? "approve" : "reject";
+
+        if (!confirm(
+          "Are you sure you want to " + action + " this story?"
+        )) return;
+
+        approveButton.disabled = true;
+        rejectButton.disabled = true;
+        setPanelMessage("Updating story...");
+
+        const { error } = await client
+          .from("stories")
+          .update({ status })
+          .eq("id", story.id)
+          .eq("status", "pending");
+
+        if (error) {
+          setPanelMessage("Could not update story: " + error.message);
+          approveButton.disabled = false;
+          rejectButton.disabled = false;
+          return;
+        }
+
+        setPanelMessage(
+          status === "approved"
+            ? "Story approved and published! ♡"
+            : "Story rejected and kept unpublished."
+        );
+
+        await loadPendingStories();
+      }
+
+      // REFRESH BOTH QUEUES
+      refreshButton.addEventListener("click", async () => {
+        refreshButton.disabled = true;
+
+        try {
+          await Promise.all([
+            loadSubmissions(),
+            loadPendingStories()
+          ]);
+          setPanelMessage("Submissions refreshed.");
+        } finally {
+          refreshButton.disabled = false;
+        }
+      });
+
+      // SIGN OUT
+      signOutButton.addEventListener("click", async () => {
+        signOutButton.disabled = true;
+        setPanelMessage("Signing out...");
+
+        const { error } = await client.auth.signOut();
+
+        if (error) {
+          setPanelMessage("Sign-out failed: " + error.message);
+          signOutButton.disabled = false;
+          return;
+        }
+
+        loginForm.reset();
+        message.textContent = "You have signed out.";
+        setPanelMessage("");
+        signOutButton.disabled = false;
+        await updatePage();
+      });
+
+      updatePage();
+    })();
   </script>
 </body>
 </html>
-```
