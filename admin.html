@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,13 +60,8 @@
       text-decoration: none;
     }
 
-    button.secondary {
-      background: #806e66;
-    }
-
-    button.reject {
-      background: #9b514e;
-    }
+    button.secondary { background: #806e66; }
+    button.reject { background: #9b514e; }
 
     button:disabled {
       opacity: 0.6;
@@ -78,15 +73,15 @@
       color: #806e66;
     }
 
-    .status {
-      overflow-wrap: anywhere;
-    }
+    .status { overflow-wrap: anywhere; }
 
     #adminPanel[hidden], #loginCard[hidden] {
       display: none;
     }
 
-    .submission img {
+    .submission img,
+    .submission video {
+      display: block;
       width: 100%;
       max-height: 420px;
       object-fit: contain;
@@ -100,9 +95,7 @@
       gap: 10px;
     }
 
-    .actions button {
-      margin-top: 8px;
-    }
+    .actions button { margin-top: 8px; }
 
     .empty {
       padding: 16px;
@@ -185,6 +178,17 @@
     const panelMessage = document.getElementById("panelMessage");
     const submissionsBox = document.getElementById("submissions");
 
+    function isVideo(item) {
+      if (item.file_type === "video") return true;
+
+      const extension = item.file_path
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+      return ["mp4", "mov", "webm", "m4v"].includes(extension);
+    }
+
     async function updatePage() {
       const { data, error } = await client.auth.getSession();
 
@@ -255,39 +259,48 @@
         card.className = "submission";
 
         const heading = document.createElement("h3");
-        heading.textContent = item.contributor;
+        heading.textContent = item.contributor || "Anonymous visitor";
 
         const caption = document.createElement("p");
-        caption.textContent = item.caption;
+        caption.textContent = item.caption || "A little memory ♡";
 
         const date = document.createElement("p");
         date.className = "note";
         date.textContent = new Date(item.created_at).toLocaleString();
 
-        card.append(heading, caption, date);
+        const typeLabel = document.createElement("p");
+        typeLabel.className = "note";
+        typeLabel.textContent = isVideo(item)
+          ? "Submitted video"
+          : "Submitted photo";
 
-        if (item.file_type === "image") {
-          const { data: fileData, error: fileError } =
-            await client.storage
-              .from("memory-submissions")
-              .createSignedUrl(item.file_path, 300);
+        card.append(heading, caption, date, typeLabel);
 
-          if (fileData && !fileError) {
-            const image = document.createElement("img");
-            image.src = fileData.signedUrl;
-            image.alt = "Photo submitted by " + item.contributor;
-            card.append(image);
+        const { data: fileData, error: fileError } =
+          await client.storage
+            .from("memory-submissions")
+            .createSignedUrl(item.file_path, 300);
+
+        if (fileData && !fileError) {
+          let media;
+
+          if (isVideo(item)) {
+            media = document.createElement("video");
+            media.controls = true;
+            media.preload = "metadata";
+            media.playsInline = true;
           } else {
-            const warning = document.createElement("p");
-            warning.textContent =
-              "The private photo preview could not be loaded. " +
-              (fileError ? fileError.message : "");
-            card.append(warning);
+            media = document.createElement("img");
+            media.alt = "Photo submitted by " + heading.textContent;
           }
+
+          media.src = fileData.signedUrl;
+          card.append(media);
         } else {
           const warning = document.createElement("p");
           warning.textContent =
-            "This submission is a video. Video publishing is not configured yet.";
+            "Private preview could not be loaded. " +
+            (fileError ? fileError.message : "");
           card.append(warning);
         }
 
@@ -296,18 +309,14 @@
 
         const approveButton = document.createElement("button");
         approveButton.textContent = "Approve";
-        approveButton.disabled = item.file_type !== "image";
-        approveButton.title = item.file_type !== "image"
-          ? "Video approval is not supported yet."
-          : "";
-
-        approveButton.addEventListener("click", () => {
-          approveSubmission(item, approveButton, rejectButton);
-        });
 
         const rejectButton = document.createElement("button");
         rejectButton.textContent = "Reject";
         rejectButton.className = "reject";
+
+        approveButton.addEventListener("click", () => {
+          approveSubmission(item, approveButton, rejectButton);
+        });
 
         rejectButton.addEventListener("click", () => {
           rejectSubmission(item, approveButton, rejectButton);
@@ -320,20 +329,24 @@
     }
 
     async function approveSubmission(item, approveButton, rejectButton) {
+      const video = isVideo(item);
+      const mediaName = video ? "video" : "photo";
+
       const confirmed = confirm(
-        "Approve this photo and publish it in the public Memories gallery?"
+        "Approve this " + mediaName +
+        " and publish it in the public Memories gallery?"
       );
 
       if (!confirmed) return;
 
       approveButton.disabled = true;
       rejectButton.disabled = true;
-      panelMessage.textContent = "Publishing photo...";
+      panelMessage.textContent = "Publishing " + mediaName + "...";
 
       let publicPath = null;
+      let contentInserted = false;
 
       try {
-        // Download the original from the private bucket.
         const { data: file, error: downloadError } =
           await client.storage
             .from("memory-submissions")
@@ -341,23 +354,24 @@
 
         if (downloadError) throw downloadError;
 
-        // Give the public copy a unique filename.
         const extension = item.file_path.includes(".")
-          ? item.file_path.split(".").pop().replace(/[^a-zA-Z0-9]/g, "")
-          : "jpg";
+          ? item.file_path.split(".").pop().replace(/[^a-zA-Z0-9]/g, "").toLowerCase()
+          : (video ? "mp4" : "jpg");
 
         publicPath = "approved-" + item.id + "." + extension;
+
+        const contentType = file.type ||
+          (video ? "video/mp4" : "image/jpeg");
 
         const { error: uploadError } = await client.storage
           .from("site-images")
           .upload(publicPath, file, {
             upsert: true,
-            contentType: file.type || "image/jpeg"
+            contentType
           });
 
         if (uploadError) throw uploadError;
 
-        // Add the public image to the gallery's content table.
         const { error: insertError } = await client
           .from("site_content")
           .insert({
@@ -366,12 +380,10 @@
             caption: item.caption
           });
 
-        if (insertError) {
-          await client.storage.from("site-images").remove([publicPath]);
-          throw insertError;
-        }
+        if (insertError) throw insertError;
 
-        // Mark the original submission as approved.
+        contentInserted = true;
+
         const { error: updateError } = await client
           .from("memory_submissions")
           .update({ status: "approved" })
@@ -380,20 +392,29 @@
 
         if (updateError) {
           panelMessage.textContent =
-            "The photo was published, but its status could not be updated. " +
+            "The " + mediaName +
+            " was published, but its submission status could not be updated. " +
             updateError.message +
-            " Please check Supabase before trying again.";
+            ". Check Supabase before trying again.";
           await loadSubmissions();
           return;
         }
 
-        panelMessage.textContent = "Photo approved and published successfully! ♡";
+        panelMessage.textContent =
+          "The " + mediaName + " was approved and published successfully! ♡";
+
         await loadSubmissions();
 
       } catch (error) {
+        console.error("Approval error:", error);
+
+        if (publicPath && !contentInserted) {
+          await client.storage.from("site-images").remove([publicPath]);
+        }
+
         panelMessage.textContent =
-          "Approval failed: " + error.message +
-          ". Check the permissions and try again.";
+          "Approval failed: " + (error.message || String(error)) +
+          ". Check Supabase permissions and the bucket size limit.";
 
         approveButton.disabled = false;
         rejectButton.disabled = false;
@@ -452,3 +473,4 @@
   </script>
 </body>
 </html>
+```
