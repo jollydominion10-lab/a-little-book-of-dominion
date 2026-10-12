@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -372,39 +373,104 @@
       </form>
     </section>
 
-   <section>
-  <div class="gallery-heading">
-    <h2>The memory wall</h2>
-    <span>Little moments, kept forever</span>
-  </div>
+    <section>
+      <div class="gallery-heading">
+        <h2>The memory wall</h2>
+        <span>Little moments, kept forever</span>
+      </div>
 
-  <div class="gallery" id="memoryGallery">
-    <p class="empty-note">Gathering little memories... ♡</p>
-  </div>
-</section>
-</main>
+      <div class="gallery" id="memoryGallery">
+        <p class="empty-note">Gathering little memories... ♡</p>
+      </div>
+    </section>
+  </main>
 
   <footer class="footer">
     Made with <span>♡</span> for a little life worth remembering.<br>
     © 2026 A Little Book of Dominion
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
   <script>
+    const client = window.supabase.createClient(
+      window.SUPABASE_URL,
+      window.SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const gallery = document.getElementById("memoryGallery");
     const memoryForm = document.getElementById("memoryForm");
     const formMessage = document.getElementById("formMessage");
+
+    async function loadMemories() {
+      gallery.replaceChildren();
+
+      const loading = document.createElement("p");
+      loading.className = "empty-note";
+      loading.textContent = "Gathering little memories... ♡";
+      gallery.appendChild(loading);
+
+      const { data, error } = await client
+        .from("site_content")
+        .select("image_path, caption, created_at")
+        .not("image_path", "is", null)
+        .order("created_at", { ascending: false });
+
+      gallery.replaceChildren();
+
+      if (error) {
+        const message = document.createElement("p");
+        message.className = "empty-note";
+        message.textContent =
+          "We couldn't load the memories just now. Please try again later.";
+        gallery.appendChild(message);
+        console.error("Gallery loading error:", error.message);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        const message = document.createElement("p");
+        message.className = "empty-note";
+        message.textContent =
+          "Our memory wall is waiting for its first little treasures. ♡";
+        gallery.appendChild(message);
+        return;
+      }
+
+      for (const memory of data) {
+        if (!memory.image_path) continue;
+
+        const { data: imageData } = client.storage
+          .from("site-images")
+          .getPublicUrl(memory.image_path);
+
+        const card = document.createElement("div");
+        card.className = "polaroid";
+
+        const image = document.createElement("img");
+        image.src = imageData.publicUrl;
+        image.alt = memory.caption || "A shared memory";
+        image.loading = "lazy";
+
+        const caption = document.createElement("p");
+        caption.textContent = memory.caption || "A little memory ♡";
+
+        card.appendChild(image);
+        card.appendChild(caption);
+        gallery.appendChild(card);
+      }
+    }
 
     memoryForm.addEventListener("submit", function(event) {
       event.preventDefault();
 
       formMessage.textContent =
-        "The design is ready, but shared submissions are not connected yet. Your memory has NOT been uploaded or saved. We'll connect secure online storage next.";
-
+        "Visitor submissions aren't connected yet. Your photo has NOT been uploaded or saved.";
       formMessage.style.color = "#9b536b";
     });
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
+    loadMemories();
+  </script>
 </body>
 </html>
-  
