@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,6 +121,7 @@
       height: 100%;
       display: block;
       object-fit: cover;
+      object-position: center;
       background: #ead9d1;
     }
 
@@ -148,6 +149,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
       display: block;
       background: #ead9d1;
     }
@@ -386,11 +388,13 @@
     @media (min-width: 700px) {
       .site { width: min(100% - 60px, 1000px); }
       header { padding-top: 28px; }
+
       .hero {
         grid-template-columns: 1fr 1fr;
         gap: 35px;
         padding: 55px 0 35px;
       }
+
       .photo-collage { height: 450px; }
       .hero-copy { text-align: left; }
       .intro { margin-left: 0; }
@@ -432,9 +436,8 @@
           <div class="paper-shadow"></div>
 
           <div class="main-photo">
-            <!-- Replace this image URL with your own portrait when ready. -->
             <img
-              src="dominion_portrait_rotated.jpg"
+              src="images/main-portrait.jpg"
               alt="Portrait of Dominion"
             >
             <div class="photo-caption">a little piece of me</div>
@@ -442,15 +445,15 @@
 
           <div class="mini-photo mini-one">
             <img
-              src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=400&q=80"
-              alt="Friends making memories"
+              src="images/home-photo-2.jpg"
+              alt="Another favourite photo of Dominion"
             >
           </div>
 
           <div class="mini-photo mini-two">
             <img
-              src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80"
-              alt="Soft pink flowers"
+              src="images/home-photo-3.jpg"
+              alt="Another memory of Dominion"
             >
           </div>
 
@@ -537,23 +540,28 @@
   </div>
 
   <script>
-    const birthday = new Date(2026, 9, 16, 0, 0, 0);
+    function getNextBirthday() {
+      const now = new Date();
+      let year = now.getFullYear();
+      let birthday = new Date(year, 9, 16, 0, 0, 0);
+
+      if (now >= birthday) {
+        birthday = new Date(year + 1, 9, 16, 0, 0, 0);
+      }
+
+      return birthday;
+    }
 
     function updateCountdown() {
       const now = new Date();
+      const birthday = getNextBirthday();
       const remaining = birthday.getTime() - now.getTime();
 
-      if (remaining <= 0) {
-        document.getElementById("countdown-title").textContent =
-          "Today is my day ♡";
-        document.getElementById("countdown-note").textContent =
-          "A new chapter, another year, and so much to be grateful for.";
+      document.getElementById("countdown-title").textContent =
+        "Counting down to my day";
 
-        ["days", "hours", "minutes", "seconds"].forEach(id => {
-          document.getElementById(id).textContent = "00";
-        });
-        return;
-      }
+      document.getElementById("countdown-note").textContent =
+        "A little closer to another year of becoming.";
 
       const days = Math.floor(remaining / 86400000);
       const hours = Math.floor((remaining % 86400000) / 3600000);
@@ -572,3 +580,4 @@
   </script>
 </body>
 </html>
+```
