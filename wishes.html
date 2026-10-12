@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,11 +18,7 @@
       --line: #f0e2da;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--cream);
@@ -33,10 +28,7 @@
       overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    a { color: inherit; text-decoration: none; }
 
     .top-note {
       background: #f8e8e9;
@@ -48,10 +40,7 @@
       text-transform: uppercase;
     }
 
-    header {
-      padding: 22px 15px 14px;
-      text-align: center;
-    }
+    header { padding: 22px 15px 14px; text-align: center; }
 
     .brand {
       font-family: "Playfair Display", serif;
@@ -59,10 +48,7 @@
       font-weight: 600;
     }
 
-    .brand span {
-      color: var(--dark-pink);
-      font-style: italic;
-    }
+    .brand span { color: var(--dark-pink); font-style: italic; }
 
     nav {
       display: flex;
@@ -74,24 +60,12 @@
       font-size: 12px;
     }
 
-    nav a {
-      color: var(--muted);
-    }
+    nav a { color: var(--muted); }
+    nav a.active { color: var(--dark-pink); font-weight: 700; }
 
-    nav a.active {
-      color: var(--dark-pink);
-      font-weight: 700;
-    }
+    main { width: min(100% - 36px, 680px); margin: auto; }
 
-    main {
-      width: min(100% - 36px, 680px);
-      margin: auto;
-    }
-
-    .intro {
-      padding: 45px 0 20px;
-      text-align: center;
-    }
+    .intro { padding: 45px 0 20px; text-align: center; }
 
     .eyebrow {
       display: inline-block;
@@ -118,10 +92,7 @@
       letter-spacing: -1.5px;
     }
 
-    h1 span {
-      color: var(--dark-pink);
-      font-style: italic;
-    }
+    h1 span { color: var(--dark-pink); font-style: italic; }
 
     .intro p {
       max-width: 420px;
@@ -140,15 +111,8 @@
       box-shadow: 0 8px 25px #6e51400a;
     }
 
-    .cake-card h2 {
-      font-size: 27px;
-      margin-bottom: 5px;
-    }
-
-    .cake-card > p {
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .cake-card h2 { font-size: 27px; margin-bottom: 5px; }
+    .cake-card > p { color: var(--muted); font-size: 12px; }
 
     .cake {
       position: relative;
@@ -171,11 +135,7 @@
     .candle {
       width: 12px;
       height: 44px;
-      background: repeating-linear-gradient(
-        135deg,
-        #fff5e9 0 6px,
-        #e9a8b8 6px 11px
-      );
+      background: repeating-linear-gradient(135deg, #fff5e9 0 6px, #e9a8b8 6px 11px);
       border-radius: 3px 3px 1px 1px;
       position: relative;
       border: 1px solid #df9eae;
@@ -196,13 +156,8 @@
       animation: flicker .7s infinite alternate;
     }
 
-    .candle.out .flame {
-      display: none;
-    }
-
-    .candle.out {
-      opacity: .65;
-    }
+    .candle.out .flame { display: none; }
+    .candle.out { opacity: .65; }
 
     @keyframes flicker {
       from { transform: rotate(-5deg) scale(.95); }
@@ -295,10 +250,9 @@
       margin: 4px;
     }
 
-    .button.secondary {
-      background: #f5e3e4;
-      color: #875566;
-    }
+    .button:disabled { opacity: .65; cursor: wait; }
+
+    .button.secondary { background: #f5e3e4; color: #875566; }
 
     .section-label {
       display: block;
@@ -310,10 +264,7 @@
       margin-bottom: 8px;
     }
 
-    .section-title {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
+    .section-title { font-size: 30px; margin-bottom: 8px; }
 
     .section-description {
       color: var(--muted);
@@ -321,9 +272,7 @@
       margin-bottom: 19px;
     }
 
-    .wish-section {
-      margin: 38px 0;
-    }
+    .wish-section { margin: 38px 0; }
 
     .wish-form {
       background: #f9eceb;
@@ -332,9 +281,7 @@
       margin-top: 18px;
     }
 
-    .field {
-      margin-bottom: 15px;
-    }
+    .field { margin-bottom: 15px; }
 
     label {
       display: block;
@@ -354,16 +301,9 @@
       font-size: 13px;
     }
 
-    textarea {
-      min-height: 105px;
-      resize: vertical;
-    }
+    textarea { min-height: 105px; resize: vertical; }
 
-    .notice {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 12px;
-    }
+    .notice { color: var(--muted); font-size: 11px; margin-top: 12px; }
 
     .wish-wall {
       display: grid;
@@ -377,23 +317,19 @@
       border-radius: 6px;
       padding: 18px;
       box-shadow: 0 5px 15px #6e514008;
+      overflow-wrap: anywhere;
     }
 
-    .wish-note .heart {
-      color: var(--dark-pink);
-      font-size: 18px;
-    }
+    .wish-note .heart { color: var(--dark-pink); font-size: 18px; }
 
     .wish-note p {
       font-family: "Playfair Display", serif;
       font-size: 16px;
       margin: 5px 0 10px;
+      white-space: pre-wrap;
     }
 
-    .wish-note strong {
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .wish-note strong { font-size: 11px; color: var(--muted); }
 
     #confettiLayer {
       position: fixed;
@@ -412,10 +348,7 @@
     }
 
     @keyframes fall {
-      to {
-        transform: translateY(110vh) rotate(720deg);
-        opacity: 0;
-      }
+      to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
 
     .footer {
@@ -426,9 +359,7 @@
       font-size: 11px;
     }
 
-    .footer span {
-      color: var(--dark-pink);
-    }
+    .footer span { color: var(--dark-pink); }
 
     @media (max-width: 360px) {
       nav { gap: 14px; }
@@ -507,18 +438,20 @@
       <form class="wish-form" id="wishForm">
         <div class="field">
           <label for="wishName">Your name</label>
-          <input id="wishName" type="text" placeholder="Your name or nickname" required>
+          <input id="wishName" type="text" maxlength="80"
+                 placeholder="Your name or nickname" required>
         </div>
 
         <div class="field">
           <label for="wishText">Your birthday message</label>
-          <textarea id="wishText" maxlength="500" placeholder="Write something lovely..." required></textarea>
+          <textarea id="wishText" maxlength="500"
+                    placeholder="Write something lovely..." required></textarea>
         </div>
 
-        <button class="button" type="submit">♡ Send my wish</button>
+        <button class="button" id="submitWishButton" type="submit">♡ Send my wish</button>
 
         <p class="notice" id="wishMessage" role="status" aria-live="polite">
-          Birthday wishes will need to be reviewed before appearing publicly.
+          Wishes are reviewed before appearing publicly.
         </p>
       </form>
     </section>
@@ -527,28 +460,12 @@
       <span class="section-label">From the heart</span>
       <h2 class="section-title">The wishes wall</h2>
       <p class="section-description">
-        A few little reminders of the love this birthday is surrounded by.
-        Real visitor wishes will appear here after we connect the database.
+        Birthday love, collected in one little corner. New wishes appear
+        here after approval.
       </p>
 
-      <div class="wish-wall">
-        <article class="wish-note">
-          <span class="heart">♡</span>
-          <p>May this next chapter bring you peace, courage, joy, and beautiful surprises.</p>
-          <strong>A little birthday blessing</strong>
-        </article>
-
-        <article class="wish-note">
-          <span class="heart">♡</span>
-          <p>May you keep growing into the person you dream of becoming, one lovely day at a time.</p>
-          <strong>With love, always</strong>
-        </article>
-
-        <article class="wish-note">
-          <span class="heart">♡</span>
-          <p>May your year be full of answered prayers, genuine laughter, and memories worth keeping.</p>
-          <strong>A wish for your new year</strong>
-        </article>
+      <div class="wish-wall" id="wishWall" aria-live="polite">
+        <p class="notice">Loading birthday wishes…</p>
       </div>
     </section>
   </main>
@@ -560,21 +477,55 @@
     © 2026 A Little Book of Dominion
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
   <script>
     const candles = document.querySelectorAll(".candle");
     const cakeMessage = document.getElementById("cakeMessage");
     const wishButton = document.getElementById("wishButton");
     const relightButton = document.getElementById("relightButton");
     const confettiLayer = document.getElementById("confettiLayer");
+    const wishForm = document.getElementById("wishForm");
+    const wishName = document.getElementById("wishName");
+    const wishText = document.getElementById("wishText");
+    const wishMessage = document.getElementById("wishMessage");
+    const submitWishButton = document.getElementById("submitWishButton");
+    const wishWall = document.getElementById("wishWall");
+
+    let supabaseClient = null;
+
+    function setNotice(message, isError = false) {
+      wishMessage.textContent = message;
+      wishMessage.style.color = isError ? "#a13e54" : "#897875";
+    }
+
+    function getSupabaseClient() {
+      if (supabaseClient) return supabaseClient;
+
+      const url = window.SUPABASE_URL;
+      const key = window.SUPABASE_PUBLISHABLE_KEY;
+
+      if (!url || !key || !window.supabase) {
+        throw new Error(
+          "Supabase configuration was not found. Check supabase-config.js."
+        );
+      }
+
+      supabaseClient = window.supabase.createClient(url, key);
+      return supabaseClient;
+    }
 
     function updateCakeMessage() {
       const litCandles = document.querySelectorAll(".candle:not(.out)").length;
 
       if (litCandles === 0) {
-        cakeMessage.textContent = "All the candles are out! May your wish come true. ♡";
+        cakeMessage.textContent =
+          "All the candles are out! May your wish come true. ♡";
       } else {
         cakeMessage.textContent =
-          litCandles + (litCandles === 1 ? " little flame left ♡" : " little flames left ♡");
+          litCandles +
+          (litCandles === 1 ? " little flame left ♡" : " little flames left ♡");
       }
     }
 
@@ -599,7 +550,8 @@
         const piece = document.createElement("span");
         piece.className = "confetti";
         piece.style.left = Math.random() * 100 + "vw";
-        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.backgroundColor =
+          colors[Math.floor(Math.random() * colors.length)];
         piece.style.animationDelay = Math.random() * 0.8 + "s";
         piece.style.transform = "rotate(" + Math.random() * 360 + "deg)";
         confettiLayer.appendChild(piece);
@@ -615,25 +567,120 @@
     }
 
     wishButton.addEventListener("click", function() {
-      const allOut = document.querySelectorAll(".candle.out").length === candles.length;
+      const allOut =
+        document.querySelectorAll(".candle.out").length === candles.length;
 
       if (allOut) {
         cakeMessage.textContent = "Your wish is sent into the universe! ✨";
         celebrate();
       } else {
-        cakeMessage.textContent = "Close your eyes, tap every candle, and make a wish! ♡";
+        cakeMessage.textContent =
+          "Close your eyes, tap every candle, and make a wish! ♡";
       }
     });
 
-    document.getElementById("wishForm").addEventListener("submit", function(event) {
+    async function loadWishes() {
+      wishWall.replaceChildren();
+
+      try {
+        const client = getSupabaseClient();
+
+        const { data, error } = await client
+          .from("wishes")
+          .select("id, contributor, message, created_at")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "notice";
+          empty.textContent =
+            "Your wishes wall is waiting for its first approved message. ♡";
+          wishWall.appendChild(empty);
+          return;
+        }
+
+        data.forEach(function(wish) {
+          const article = document.createElement("article");
+          article.className = "wish-note";
+
+          const heart = document.createElement("span");
+          heart.className = "heart";
+          heart.textContent = "♡";
+
+          const message = document.createElement("p");
+          message.textContent = wish.message;
+
+          const author = document.createElement("strong");
+          author.textContent = "With love, " + wish.contributor;
+
+          article.append(heart, message, author);
+          wishWall.appendChild(article);
+        });
+      } catch (error) {
+        console.error("Could not load wishes:", error);
+        wishWall.replaceChildren();
+
+        const errorText = document.createElement("p");
+        errorText.className = "notice";
+        errorText.textContent =
+          "We couldn't load the wishes right now. Please refresh the page.";
+        wishWall.appendChild(errorText);
+      }
+    }
+
+    wishForm.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      document.getElementById("wishMessage").textContent =
-        "The design is ready, but saving wishes is not connected yet. Your message has NOT been uploaded or saved. We'll connect the database before accepting real submissions.";
+      const contributor = wishName.value.trim();
+      const message = wishText.value.trim();
 
-      document.getElementById("wishMessage").style.color = "#9b536b";
+      if (!contributor || !message) {
+        setNotice("Please enter your name and birthday message.", true);
+        return;
+      }
+
+      if (contributor.length > 80 || message.length > 500) {
+        setNotice("Your name or message is too long.", true);
+        return;
+      }
+
+      submitWishButton.disabled = true;
+      submitWishButton.textContent = "Sending your wish…";
+      setNotice("Saving your wish securely…");
+
+      try {
+        const client = getSupabaseClient();
+
+        const { error } = await client
+          .from("wishes")
+          .insert({
+            contributor: contributor,
+            message: message,
+            status: "pending"
+          });
+
+        if (error) throw error;
+
+        wishForm.reset();
+        setNotice(
+          "Your wish has been received! ♡ It will appear after Dominion approves it."
+        );
+      } catch (error) {
+        console.error("Could not submit wish:", error);
+        setNotice(
+          "Your wish could not be saved. Please try again. If this continues, check the Supabase setup.",
+          true
+        );
+      } finally {
+        submitWishButton.disabled = false;
+        submitWishButton.textContent = "♡ Send my wish";
+      }
     });
+
+    loadWishes();
   </script>
 </body>
-  </html>
-  
+</html>
