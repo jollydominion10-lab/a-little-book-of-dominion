@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -271,12 +270,18 @@
       margin-top: 18px;
     }
 
-    .polaroid img {
+    .polaroid img,
+    .polaroid video {
       width: 100%;
       aspect-ratio: 4 / 5;
       object-fit: cover;
       display: block;
       background: #f6e8e3;
+      border-radius: 2px;
+    }
+
+    .polaroid video {
+      object-fit: contain;
     }
 
     .polaroid p {
@@ -351,7 +356,7 @@
       <div class="tape"></div>
       <h2>Add a memory</h2>
       <p>
-        Have a photo with me? Leave it here with a little caption.
+        Have a photo or video with me? Leave it here with a little caption.
         I'd love to see it!
       </p>
 
@@ -380,14 +385,17 @@
         </div>
 
         <div class="field">
-          <label for="memoryFile">Choose a photo</label>
+          <label for="memoryFile">Choose a photo or video</label>
           <input
-  id="memoryFile"
-  type="file"
-  accept="image/*,video/*,.mp4,.mov,.webm,.m4v"
-  required
->
-          <p class="notice">JPG, PNG or WebP · Maximum 5 MB.</p>
+            id="memoryFile"
+            name="memoryFile"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm,.m4v"
+            required
+          >
+          <p class="notice">
+            JPG, PNG, WebP, MP4, MOV, WebM or M4V · Maximum 50 MB per file.
+          </p>
         </div>
 
         <button class="button" id="submitMemory" type="submit">
@@ -396,7 +404,7 @@
 
         <p class="notice">
           Your submission stays private until it is reviewed and approved.
-          Please only share pictures you have permission to share.
+          Please only share pictures or videos you have permission to share.
         </p>
 
         <p id="formMessage" class="notice" role="status" aria-live="polite"></p>
@@ -425,21 +433,61 @@
 
   <script>
     const client = window.supabase.createClient(
-  window.SUPABASE_URL,
-  window.SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false
-    }
-  }
-);
+      window.SUPABASE_URL,
+      window.SUPABASE_PUBLISHABLE_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      }
+    );
 
     const gallery = document.getElementById("memoryGallery");
     const memoryForm = document.getElementById("memoryForm");
     const formMessage = document.getElementById("formMessage");
     const submitButton = document.getElementById("submitMemory");
+
+    const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+    const allowedTypes = {
+      "image/jpeg": { extension: "jpg", kind: "image" },
+      "image/png": { extension: "png", kind: "image" },
+      "image/webp": { extension: "webp", kind: "image" },
+      "video/mp4": { extension: "mp4", kind: "video" },
+      "video/quicktime": { extension: "mov", kind: "video" },
+      "video/webm": { extension: "webm", kind: "video" },
+      "video/x-m4v": { extension: "m4v", kind: "video" }
+    };
+
+    function showMessage(message, success = false) {
+      formMessage.style.color = success ? "#56805b" : "#897875";
+      formMessage.textContent = message;
+    }
+
+    function getFileInfo(file) {
+      const typeInfo = allowedTypes[file.type];
+
+      if (typeInfo) {
+        return typeInfo;
+      }
+
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      const extensionTypes = {
+        jpg: { extension: "jpg", kind: "image" },
+        jpeg: { extension: "jpg", kind: "image" },
+        png: { extension: "png", kind: "image" },
+        webp: { extension: "webp", kind: "image" },
+        mp4: { extension: "mp4", kind: "video" },
+        mov: { extension: "mov", kind: "video" },
+        webm: { extension: "webm", kind: "video" },
+        m4v: { extension: "m4v", kind: "video" }
+      };
+
+      return extensionTypes[extension] || null;
+    }
 
     async function loadMemories() {
       gallery.replaceChildren();
@@ -479,22 +527,42 @@
       }
 
       for (const memory of memories) {
-        const { data: imageData } = client.storage
+        const { data: fileData } = client.storage
           .from("site-images")
           .getPublicUrl(memory.image_path);
 
         const card = document.createElement("div");
         card.className = "polaroid";
 
-        const image = document.createElement("img");
-        image.src = imageData.publicUrl;
-        image.alt = memory.caption || "A shared memory";
-        image.loading = "lazy";
+        const extension = memory.image_path
+          .split(".")
+          .pop()
+          .split("?")[0]
+          .toLowerCase();
+
+        const videoExtensions = ["mp4", "mov", "webm", "m4v"];
+        const isVideo = videoExtensions.includes(extension);
+
+        let media;
+
+        if (isVideo) {
+          media = document.createElement("video");
+          media.controls = true;
+          media.preload = "metadata";
+          media.playsInline = true;
+          media.src = fileData.publicUrl;
+          media.setAttribute("aria-label", memory.caption || "A shared video memory");
+        } else {
+          media = document.createElement("img");
+          media.src = fileData.publicUrl;
+          media.alt = memory.caption || "A shared memory";
+          media.loading = "lazy";
+        }
 
         const caption = document.createElement("p");
         caption.textContent = memory.caption || "A little memory ♡";
 
-        card.appendChild(image);
+        card.appendChild(media);
         card.appendChild(caption);
         gallery.appendChild(card);
       }
@@ -502,6 +570,8 @@
 
     memoryForm.addEventListener("submit", async function(event) {
       event.preventDefault();
+
+      if (submitButton.disabled) return;
 
       const contributor = document
         .getElementById("contributor")
@@ -511,52 +581,57 @@
         .getElementById("caption")
         .value.trim();
 
-      const photoInput = document.getElementById("memoryFile");
-      const photo = photoInput.files[0];
+      const fileInput = document.getElementById("memoryFile");
+      const file = fileInput.files[0];
 
-      if (!contributor || !caption || !photo) {
-        formMessage.textContent = "Please fill in every field. ♡";
+      if (!contributor || !caption || !file) {
+        showMessage("Please fill in every field. ♡");
         return;
       }
 
-      const allowedTypes = {
-        "image/jpeg": "jpg",
-        "image/png": "png",
-        "image/webp": "webp"
-      };
+      const fileInfo = getFileInfo(file);
 
-      if (!allowedTypes[photo.type]) {
-        formMessage.textContent =
-          "Please choose a JPG, PNG or WebP photo.";
+      if (!fileInfo) {
+        showMessage(
+          "Please choose a JPG, PNG, WebP, MP4, MOV, WebM or M4V file."
+        );
         return;
       }
 
-      if (photo.size > 5 * 1024 * 1024) {
-        formMessage.textContent =
-          "Your photo is too large. Please choose one under 5 MB.";
+      if (file.size > MAX_FILE_SIZE) {
+        showMessage(
+          "This file is too large. Please choose a file no bigger than 50 MB."
+        );
+        return;
+      }
+
+      if (file.size === 0) {
+        showMessage("This file appears to be empty. Please choose another file.");
         return;
       }
 
       if (contributor.length > 80 || caption.length > 1000) {
-        formMessage.textContent =
-          "Your name or caption is too long.";
+        showMessage("Your name or caption is too long.");
         return;
       }
 
       const filePath =
-        crypto.randomUUID() + "." + allowedTypes[photo.type];
+        crypto.randomUUID() + "." + fileInfo.extension;
 
       submitButton.disabled = true;
-      formMessage.style.color = "#897875";
-      formMessage.textContent = "Sending your memory... ♡";
+      showMessage("Sending your memory... ♡");
 
       let uploadCompleted = false;
 
       try {
         const { error: uploadError } = await client.storage
           .from("memory-submissions")
-          .upload(filePath, photo, {
-            contentType: photo.type,
+          .upload(filePath, file, {
+            contentType: file.type || (
+              fileInfo.kind === "video"
+                ? "video/mp4"
+                : "application/octet-stream"
+            ),
             upsert: false
           });
 
@@ -572,7 +647,7 @@
             contributor: contributor,
             caption: caption,
             file_path: filePath,
-            file_type: "image",
+            file_type: fileInfo.kind,
             status: "pending"
           });
 
@@ -581,23 +656,28 @@
         }
 
         memoryForm.reset();
-        formMessage.style.color = "#56805b";
-        formMessage.textContent =
-          "Your memory has been submitted! It will appear after approval. ♡";
 
-     } catch (error) {
-  console.error("Memory submission error:", error);
+        showMessage(
+          "Your memory has been submitted for review! It will appear after approval. ♡",
+          true
+        );
 
-  if (uploadCompleted) {
-    formMessage.textContent =
-      "Your photo uploaded, but we couldn't save its submission. Please contact Dominion before trying again.";
-  } else {
-    formMessage.textContent =
-      "Upload error: " + (error.message || String(error));
-  }
-} finally {
-  submitButton.disabled = false;
-}
+      } catch (error) {
+        console.error("Memory submission error:", error);
+
+        if (uploadCompleted) {
+          showMessage(
+            "The file uploaded, but we couldn't save the submission record. Please contact Dominion before trying again."
+          );
+        } else {
+          showMessage(
+            "Upload failed: " +
+            (error.message || "Please try again.")
+          );
+        }
+      } finally {
+        submitButton.disabled = false;
+      }
     });
 
     loadMemories();
