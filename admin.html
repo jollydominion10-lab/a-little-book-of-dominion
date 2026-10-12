@@ -1,10 +1,11 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dominion's Admin Studio</title>
+
   <style>
     body {
       margin: 0;
@@ -13,10 +14,12 @@
       color: #57443f;
       font-family: Arial, sans-serif;
     }
+
     main {
       max-width: 480px;
       margin: 30px auto;
     }
+
     .card {
       background: #fffaf6;
       padding: 24px;
@@ -24,12 +27,17 @@
       border: 1px solid #eadbd3;
       margin-bottom: 18px;
     }
+
     h1 {
       font-family: Georgia, serif;
       font-weight: normal;
     }
-    p { line-height: 1.6; }
-    input, button {
+
+    p {
+      line-height: 1.6;
+    }
+
+    input, button, .link-button {
       box-sizing: border-box;
       width: 100%;
       padding: 13px;
@@ -37,85 +45,134 @@
       border-radius: 10px;
       font-size: 16px;
     }
+
     input {
       border: 1px solid #d9c6bd;
       background: white;
     }
-    button {
+
+    button, .link-button {
+      display: block;
       border: 0;
       background: #b87589;
       color: white;
       cursor: pointer;
+      text-align: center;
+      text-decoration: none;
     }
-    .note { font-size: 13px; color: #806e66; }
+
+    .note {
+      font-size: 13px;
+      color: #806e66;
+    }
+
+    #adminPanel[hidden] {
+      display: none;
+    }
+
+    .status {
+      overflow-wrap: anywhere;
+    }
   </style>
 </head>
+
 <body>
   <main>
     <div class="card">
       <p>♡ A LITTLE BOOK OF DOMINION</p>
       <h1>Admin Studio</h1>
-      <p>Your private corner for caring for the memories, stories and wishes.</p>
+      <p>
+        Your private corner for looking after the memories
+        shared by visitors.
+      </p>
     </div>
 
-    <div class="card">
+    <div class="card" id="loginCard">
       <h2>Sign in</h2>
-      <p>Sign in with the admin account you created in Supabase.</p>
-      <input id="email" type="email" placeholder="Admin email">
-      <input id="password" type="password" placeholder="Password">
-      <button id="signIn">Sign in</button>
-      <p id="message" role="status"></p>
-      <p class="note">Sign in to manage your website.</p>
+      <p>Sign in with your admin account.</p>
+
+      <form id="loginForm">
+        <input
+          id="email"
+          type="email"
+          placeholder="Admin email"
+          autocomplete="username"
+          required
+        >
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit" id="signIn">Sign in</button>
+      </form>
+
+      <p id="message" class="status" role="status"></p>
+      <p class="note">This page is for the website admin only.</p>
     </div>
 
-   
-<div class="card" id="photoManager" hidden>
-  <h2>Your memories</h2>
-  <p>Upload a photo and give it a caption.</p>
+    <div class="card" id="adminPanel" hidden>
+      <h2>Welcome back ♡</h2>
 
-  <form id="photoForm">
-    <label for="photo">Choose a photo</label>
-    <input id="photo" type="file" accept="image/*" required>
+      <p>
+        Visitors can share their photos and captions on the
+        Memories page. Their submissions should be reviewed
+        before they appear in the public gallery.
+      </p>
 
-    <label for="caption">Photo caption</label>
-    <input
-      id="caption"
-      type="text"
-      placeholder="Write a little caption..."
-      maxlength="200"
-      required
-    >
+      <a class="link-button" href="memories.html">
+        View Memories Page
+      </a>
 
-    <button type="submit">Upload memory ♡</button>
-  </form>
+      <p class="note">
+        This page no longer contains a visitor photo-upload form
+        or a personal photo-upload form.
+      </p>
 
-  <p id="uploadMessage" role="status"></p>
-  <div id="photoList"></div>
+      <p id="panelMessage" class="status" role="status"></p>
 
-  <button id="signOut" type="button">Sign out</button>
-</div>
+      <button type="button" id="signOut">Sign out</button>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+
   <script>
     const client = window.supabase.createClient(
       window.SUPABASE_URL,
       window.SUPABASE_PUBLISHABLE_KEY
     );
 
-    document.getElementById("message").textContent =
-      "Supabase client loaded. Ready to test sign-in.";
+    const loginCard = document.getElementById("loginCard");
+    const adminPanel = document.getElementById("adminPanel");
+    const loginForm = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+    const panelMessage = document.getElementById("panelMessage");
 
-    document.getElementById("signIn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const message = document.getElementById("message");
+    async function updatePage() {
+      const { data, error } = await client.auth.getSession();
 
-      if (!email || !password) {
-        message.textContent = "Please enter your admin email and password.";
+      if (error) {
+        message.textContent = "Could not check your session: " + error.message;
         return;
       }
+
+      const session = data.session;
+
+      loginCard.hidden = Boolean(session);
+      adminPanel.hidden = !session;
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
       message.textContent = "Signing in...";
 
@@ -129,134 +186,28 @@
         return;
       }
 
-     
-      message.textContent = "Sign-in successful! Your connection is working.";
+      message.textContent = "Sign-in successful!";
+      await updatePage();
     });
 
-const photoManager = document.getElementById("photoManager");
-const photoForm = document.getElementById("photoForm");
-const uploadMessage = document.getElementById("uploadMessage");
-const photoList = document.getElementById("photoList");
+    document.getElementById("signOut").addEventListener("click", async () => {
+      panelMessage.textContent = "Signing out...";
 
-// Show the photo manager only after admin sign-in.
-async function checkAdminSession() {
-  const { data: { session } } = await client.auth.getSession();
+      const { error } = await client.auth.signOut();
 
-  if (session) {
-    photoManager.hidden = false;
-    await loadMemories();
-  }
-}
+      if (error) {
+        panelMessage.textContent = "Sign-out failed: " + error.message;
+        return;
+      }
 
-async function loadMemories() {
-  photoList.replaceChildren();
-
-  const { data, error } = await client
-    .from("site_content")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    uploadMessage.textContent = "Could not load memories: " + error.message;
-    return;
-  }
-
-  for (const memory of data) {
-    const item = document.createElement("div");
-    item.style.marginTop = "16px";
-
-    const caption = document.createElement("p");
-    caption.textContent = memory.caption || "Untitled memory";
-
-    item.appendChild(caption);
-
-    if (memory.image_path) {
-      const { data: imageData } = client.storage
-        .from("site-images")
-        .getPublicUrl(memory.image_path);
-
-      const image = document.createElement("img");
-      image.src = imageData.publicUrl;
-      image.alt = memory.caption || "Memory photo";
-      image.style.width = "100%";
-      image.style.maxWidth = "320px";
-      image.style.borderRadius = "12px";
-
-      item.prepend(image);
-    }
-
-    photoList.appendChild(item);
-  }
-}
-
-photoForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const { data: { session } } = await client.auth.getSession();
-
-  if (!session) {
-    uploadMessage.textContent = "Please sign in first.";
-    photoManager.hidden = true;
-    return;
-  }
-
-  const file = document.getElementById("photo").files[0];
-  const caption = document.getElementById("caption").value.trim();
-
-  if (!file || !caption) {
-    uploadMessage.textContent = "Choose a photo and enter a caption.";
-    return;
-  }
-
-  if (!file.type.startsWith("image/")) {
-    uploadMessage.textContent = "Please choose an image file.";
-    return;
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    uploadMessage.textContent = "Please choose an image smaller than 5 MB.";
-    return;
-  }
-
-  uploadMessage.textContent = "Uploading your memory...";
-
-  const filePath = `${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-
-  const { error: storageError } = await client.storage
-    .from("site-images")
-    .upload(filePath, file, { contentType: file.type });
-
-  if (storageError) {
-    uploadMessage.textContent = "Photo upload failed: " + storageError.message;
-    return;
-  }
-
-  const { error: databaseError } = await client
-    .from("site_content")
-    .insert({
-      content_key: "memory",
-      image_path: filePath,
-      caption
+      loginForm.reset();
+      message.textContent = "You have signed out.";
+      panelMessage.textContent = "";
+      await updatePage();
     });
 
-  if (databaseError) {
-    uploadMessage.textContent =
-      "The photo uploaded, but saving its caption failed: " +
-      databaseError.message;
-    return;
-  }
-
-  photoForm.reset();
-  uploadMessage.textContent = "Memory saved successfully! ♡";
-  await loadMemories();
-});
-
-document.getElementById("signOut").addEventListener("click", async () => {
-  await client.auth.signOut();
-  photoManager.hidden = true;
-  uploadMessage.textContent = "You have signed out.";
-});
-  checkAdminSession();
-</script>
+    updatePage();
+  </script>
 </body>
 </html>
+```
