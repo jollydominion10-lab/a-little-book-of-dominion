@@ -579,19 +579,19 @@
         formMessage.textContent =
           "Your memory has been submitted! It will appear after approval. ♡";
 
-      } catch (error) {
-        console.error("Memory submission error:", error);
+     } catch (error) {
+  console.error("Memory submission error:", error);
 
-        if (uploadCompleted) {
-          formMessage.textContent =
-            "Your photo uploaded, but we couldn't save its submission. Please contact Dominion before trying again.";
-        } else {
-          formMessage.textContent =
-            "We couldn't upload your memory. Please try again.";
-        }
-      } finally {
-        submitButton.disabled = false;
-      }
+  if (uploadCompleted) {
+    formMessage.textContent =
+      "Your photo uploaded, but we couldn't save its submission. Please contact Dominion before trying again.";
+  } else {
+    formMessage.textContent =
+      "Upload error: " + (error.message || String(error));
+  }
+} finally {
+  submitButton.disabled = false;
+}
     });
 
     loadMemories();
