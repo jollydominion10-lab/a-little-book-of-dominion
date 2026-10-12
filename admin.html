@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,7 +119,7 @@
     <div class="card">
       <p>♡ A LITTLE BOOK OF DOMINION</p>
       <h1>Admin Studio</h1>
-      <p>Your private corner for looking after the memories and stories shared by visitors.</p>
+      <p>Your private corner for looking after the memories, stories, and wishes shared by visitors.</p>
     </div>
 
     <div class="card" id="loginCard">
@@ -155,8 +154,10 @@
       <h2>Welcome back ♡</h2>
       <p>Review visitor submissions before they appear publicly.</p>
 
+      <a class="link-button" href="index.html">View Home Page</a>
       <a class="link-button" href="memories.html">View Memories Page</a>
       <a class="link-button" href="stories.html">View Stories Page</a>
+      <a class="link-button" href="wishes.html">View Wishes Page</a>
 
       <button type="button" id="refreshButton" class="secondary">
         Refresh all submissions
@@ -171,11 +172,20 @@
 
       <h2 class="section-heading">Pending stories</h2>
       <p class="note">
-        Approved stories will appear on the public Stories page.
-        Rejected stories will remain unpublished.
+        Approved stories appear on the public Stories page.
+        Rejected stories remain unpublished.
       </p>
       <div id="pendingStories">
         <p>Loading stories...</p>
+      </div>
+
+      <h2 class="section-heading">Pending wishes</h2>
+      <p class="note">
+        Approve a birthday wish to display it on the public Wishes page.
+        Rejected wishes remain unpublished.
+      </p>
+      <div id="pendingWishes">
+        <p>Loading wishes...</p>
       </div>
 
       <button type="button" id="signOut" class="secondary">
@@ -189,22 +199,6 @@
 
   <script>
     (() => {
-      if (
-        !window.supabase ||
-        !window.SUPABASE_URL ||
-        !window.SUPABASE_PUBLISHABLE_KEY
-      ) {
-        document.getElementById("message").textContent =
-          "Supabase configuration could not be loaded. Check supabase-config.js.";
-        document.getElementById("signIn").disabled = true;
-        return;
-      }
-
-      const client = window.supabase.createClient(
-        window.SUPABASE_URL,
-        window.SUPABASE_PUBLISHABLE_KEY
-      );
-
       const loginCard = document.getElementById("loginCard");
       const adminPanel = document.getElementById("adminPanel");
       const loginForm = document.getElementById("loginForm");
@@ -212,8 +206,26 @@
       const panelMessage = document.getElementById("panelMessage");
       const submissionsBox = document.getElementById("submissions");
       const pendingStoriesBox = document.getElementById("pendingStories");
+      const pendingWishesBox = document.getElementById("pendingWishes");
       const refreshButton = document.getElementById("refreshButton");
       const signOutButton = document.getElementById("signOut");
+      const signInButton = document.getElementById("signIn");
+
+      if (
+        !window.supabase ||
+        !window.SUPABASE_URL ||
+        !window.SUPABASE_PUBLISHABLE_KEY
+      ) {
+        message.textContent =
+          "Supabase configuration could not be loaded. Check supabase-config.js.";
+        signInButton.disabled = true;
+        return;
+      }
+
+      const client = window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_PUBLISHABLE_KEY
+      );
 
       function setPanelMessage(text) {
         panelMessage.textContent = text;
@@ -226,10 +238,34 @@
         return paragraph;
       }
 
+      function makeActions(approveLabel, rejectLabel, onApprove, onReject) {
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const approveButton = document.createElement("button");
+        approveButton.textContent = approveLabel;
+
+        const rejectButton = document.createElement("button");
+        rejectButton.textContent = rejectLabel;
+        rejectButton.className = "reject";
+
+        approveButton.addEventListener("click", () => {
+          onApprove(approveButton, rejectButton);
+        });
+
+        rejectButton.addEventListener("click", () => {
+          onReject(approveButton, rejectButton);
+        });
+
+        actions.append(approveButton, rejectButton);
+
+        return { actions, approveButton, rejectButton };
+      }
+
       function isVideo(item) {
         if (item.file_type === "video") return true;
 
-        const extension = item.file_path
+        const extension = (item.file_path || "")
           .split(".")
           .pop()
           .toLowerCase();
@@ -241,8 +277,7 @@
         const { data, error } = await client.auth.getSession();
 
         if (error) {
-          message.textContent =
-            "Could not check session: " + error.message;
+          message.textContent = "Could not check session: " + error.message;
           return;
         }
 
@@ -253,7 +288,8 @@
         if (session) {
           await Promise.all([
             loadSubmissions(),
-            loadPendingStories()
+            loadPendingStories(),
+            loadPendingWishes()
           ]);
         }
       }
@@ -263,7 +299,6 @@
 
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
-        const signInButton = document.getElementById("signIn");
 
         signInButton.disabled = true;
         message.textContent = "Signing in...";
@@ -289,7 +324,8 @@
         }
       });
 
-      // MEMORY SUBMISSIONS
+      // ---------------- MEMORY SUBMISSIONS ----------------
+
       async function loadSubmissions() {
         submissionsBox.replaceChildren();
         submissionsBox.textContent = "Loading submissions...";
@@ -365,25 +401,13 @@
             card.appendChild(warning);
           }
 
-          const actions = document.createElement("div");
-          actions.className = "actions";
+          const { actions, approveButton, rejectButton } = makeActions(
+            "Approve",
+            "Reject",
+            (approve, reject) => approveSubmission(item, approve, reject),
+            (approve, reject) => rejectSubmission(item, approve, reject)
+          );
 
-          const approveButton = document.createElement("button");
-          approveButton.textContent = "Approve";
-
-          const rejectButton = document.createElement("button");
-          rejectButton.textContent = "Reject";
-          rejectButton.className = "reject";
-
-          approveButton.addEventListener("click", () => {
-            approveSubmission(item, approveButton, rejectButton);
-          });
-
-          rejectButton.addEventListener("click", () => {
-            rejectSubmission(item, approveButton, rejectButton);
-          });
-
-          actions.append(approveButton, rejectButton);
           card.appendChild(actions);
           submissionsBox.appendChild(card);
         }
@@ -501,11 +525,12 @@
           return;
         }
 
-        setPanelMessage("Submission rejected.");
+        setPanelMessage("Memory submission rejected.");
         await loadSubmissions();
       }
 
-      // STORY SUBMISSIONS
+      // ---------------- STORY SUBMISSIONS ----------------
+
       async function loadPendingStories() {
         pendingStoriesBox.replaceChildren();
         pendingStoriesBox.textContent = "Loading stories...";
@@ -520,7 +545,7 @@
           pendingStoriesBox.replaceChildren();
           pendingStoriesBox.appendChild(
             makeEmptyMessage(
-              "Could not load stories. Check your Stories table permissions. " +
+              "Could not load stories. Check the Stories table permissions. " +
               error.message
             )
           );
@@ -554,25 +579,15 @@
           body.style.whiteSpace = "pre-wrap";
           body.textContent = story.body;
 
-          const actions = document.createElement("div");
-          actions.className = "actions";
+          const { actions, approveButton, rejectButton } = makeActions(
+            "Approve",
+            "Reject",
+            (approve, reject) =>
+              setStoryStatus(story, "approved", approve, reject),
+            (approve, reject) =>
+              setStoryStatus(story, "rejected", approve, reject)
+          );
 
-          const approveButton = document.createElement("button");
-          approveButton.textContent = "Approve";
-
-          const rejectButton = document.createElement("button");
-          rejectButton.textContent = "Reject";
-          rejectButton.className = "reject";
-
-          approveButton.addEventListener("click", () => {
-            setStoryStatus(story, "approved", approveButton, rejectButton);
-          });
-
-          rejectButton.addEventListener("click", () => {
-            setStoryStatus(story, "rejected", approveButton, rejectButton);
-          });
-
-          actions.append(approveButton, rejectButton);
           card.append(title, author, date, body, actions);
           pendingStoriesBox.appendChild(card);
         }
@@ -583,9 +598,9 @@
       ) {
         const action = status === "approved" ? "approve" : "reject";
 
-        if (!confirm(
-          "Are you sure you want to " + action + " this story?"
-        )) return;
+        if (!confirm("Are you sure you want to " + action + " this story?")) {
+          return;
+        }
 
         approveButton.disabled = true;
         rejectButton.disabled = true;
@@ -613,22 +628,133 @@
         await loadPendingStories();
       }
 
-      // REFRESH BOTH QUEUES
+      // ---------------- WISH SUBMISSIONS ----------------
+
+      async function loadPendingWishes() {
+        pendingWishesBox.replaceChildren();
+        pendingWishesBox.textContent = "Loading wishes...";
+
+        const { data, error } = await client
+          .from("wishes")
+          .select("id, created_at, contributor, message")
+          .eq("status", "pending")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          pendingWishesBox.replaceChildren();
+          pendingWishesBox.appendChild(
+            makeEmptyMessage(
+              "Could not load wishes. Check the wishes table and its permissions. " +
+              error.message
+            )
+          );
+          return;
+        }
+
+        pendingWishesBox.replaceChildren();
+
+        if (!data || data.length === 0) {
+          pendingWishesBox.appendChild(
+            makeEmptyMessage("No pending wishes right now. ♡")
+          );
+          return;
+        }
+
+        for (const wish of data) {
+          const card = document.createElement("article");
+          card.className = "submission";
+
+          const title = document.createElement("h3");
+          title.textContent = "♡ " + (wish.contributor || "Anonymous visitor");
+
+          const date = document.createElement("p");
+          date.className = "note";
+          date.textContent = new Date(wish.created_at).toLocaleString();
+
+          const body = document.createElement("p");
+          body.style.whiteSpace = "pre-wrap";
+          body.textContent = wish.message;
+
+          const { actions, approveButton, rejectButton } = makeActions(
+            "Approve",
+            "Reject",
+            (approve, reject) =>
+              setWishStatus(wish, "approved", approve, reject),
+            (approve, reject) =>
+              setWishStatus(wish, "rejected", approve, reject)
+          );
+
+          card.append(title, date, body, actions);
+          pendingWishesBox.appendChild(card);
+        }
+      }
+
+      async function setWishStatus(
+        wish, status, approveButton, rejectButton
+      ) {
+        const action = status === "approved" ? "approve" : "reject";
+
+        if (!confirm("Are you sure you want to " + action + " this wish?")) {
+          return;
+        }
+
+        approveButton.disabled = true;
+        rejectButton.disabled = true;
+        setPanelMessage("Updating birthday wish...");
+
+        const { data, error } = await client
+          .from("wishes")
+          .update({ status })
+          .eq("id", wish.id)
+          .eq("status", "pending")
+          .select("id");
+
+        if (error) {
+          setPanelMessage("Could not update wish: " + error.message);
+          approveButton.disabled = false;
+          rejectButton.disabled = false;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          setPanelMessage(
+            "The wish was not updated. Check admin permissions or refresh the page."
+          );
+          approveButton.disabled = false;
+          rejectButton.disabled = false;
+          return;
+        }
+
+        setPanelMessage(
+          status === "approved"
+            ? "Birthday wish approved! It should now appear on the Wishes page. ♡"
+            : "Birthday wish rejected and kept unpublished."
+        );
+
+        await loadPendingWishes();
+      }
+
+      // ---------------- REFRESH ALL QUEUES ----------------
+
       refreshButton.addEventListener("click", async () => {
         refreshButton.disabled = true;
+        setPanelMessage("Refreshing submissions...");
 
         try {
           await Promise.all([
             loadSubmissions(),
-            loadPendingStories()
+            loadPendingStories(),
+            loadPendingWishes()
           ]);
-          setPanelMessage("Submissions refreshed.");
+
+          setPanelMessage("All submission queues refreshed.");
         } finally {
           refreshButton.disabled = false;
         }
       });
 
-      // SIGN OUT
+      // ---------------- SIGN OUT ----------------
+
       signOutButton.addEventListener("click", async () => {
         signOutButton.disabled = true;
         setPanelMessage("Signing out...");
