@@ -167,6 +167,17 @@
       color: var(--muted);
     }
 
+    .paper .story-meta {
+      color: var(--dark-pink);
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+
+    .paper .story-body {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
     .quote {
       border-left: 3px solid var(--pink);
       padding-left: 15px;
@@ -244,6 +255,11 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
 
     .notice {
@@ -340,6 +356,10 @@
           I want to hear your version of the story.
         </p>
       </article>
+
+      <div id="storiesList" aria-live="polite">
+        <p>Loading stories...</p>
+      </div>
     </section>
 
     <section class="form-card">
@@ -353,23 +373,26 @@
       <form id="storyForm">
         <div class="field">
           <label for="storyName">Your name</label>
-          <input id="storyName" type="text" placeholder="Your name or nickname" required>
+          <input id="storyName" type="text" maxlength="80"
+                 placeholder="Your name or nickname" required>
         </div>
 
         <div class="field">
           <label for="storyTitle">Give your story a title</label>
-          <input id="storyTitle" type="text" placeholder="e.g. The day we couldn't stop laughing" required>
+          <input id="storyTitle" type="text" maxlength="150"
+                 placeholder="e.g. The day we couldn't stop laughing" required>
         </div>
 
         <div class="field">
           <label for="storyText">Your story</label>
-          <textarea id="storyText" placeholder="Start wherever you like..." required></textarea>
+          <textarea id="storyText" maxlength="10000"
+                    placeholder="Start wherever you like..." required></textarea>
         </div>
 
         <button class="button" type="submit">♡ Submit your story</button>
 
         <p id="storyMessage" class="notice" role="status" aria-live="polite">
-          Stories will need to be reviewed before being displayed publicly.
+          Stories will be reviewed before being displayed publicly.
         </p>
       </form>
     </section>
@@ -380,16 +403,156 @@
     © 2026 A Little Book of Dominion
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
   <script>
-    document.getElementById("storyForm").addEventListener("submit", function(event) {
-      event.preventDefault();
+    (() => {
+      const storyForm = document.getElementById("storyForm");
+      const storyMessage = document.getElementById("storyMessage");
+      const storiesList = document.getElementById("storiesList");
+      const submitButton = storyForm.querySelector('button[type="submit"]');
 
-      document.getElementById("storyMessage").textContent =
-        "The form is designed, but saving stories is not connected yet. Your story has NOT been uploaded or saved. We'll connect the database before accepting real submissions.";
+      function showMessage(message, color) {
+        storyMessage.textContent = message;
+        storyMessage.style.color = color || "#897875";
+      }
 
-      document.getElementById("storyMessage").style.color = "#9b536b";
-    });
+      // Make sure the configuration and Supabase library are available.
+      if (
+        !window.supabase ||
+        !window.SUPABASE_URL ||
+        !window.SUPABASE_PUBLISHABLE_KEY
+      ) {
+        console.error("Supabase configuration is missing.");
+        showMessage(
+          "The story form is temporarily unavailable. Please try again later.",
+          "#9b536b"
+        );
+        storiesList.textContent = "Stories are temporarily unavailable.";
+        submitButton.disabled = true;
+        return;
+      }
+
+      const supabaseClient = window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false
+          }
+        }
+      );
+
+      async function loadStories() {
+        storiesList.textContent = "Loading stories...";
+
+        const { data, error } = await supabaseClient
+          .from("stories")
+          .select("contributor, title, body, created_at")
+          .eq("status", "approved")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Could not load approved stories:", error);
+          storiesList.textContent =
+            "Stories could not load right now. Please try again later.";
+          return;
+        }
+
+        storiesList.replaceChildren();
+
+        if (!data || data.length === 0) {
+          const emptyMessage = document.createElement("p");
+          emptyMessage.textContent =
+            "No visitor stories have been published yet. Maybe yours will be the first!";
+          storiesList.appendChild(emptyMessage);
+          return;
+        }
+
+        data.forEach((story) => {
+          const card = document.createElement("article");
+          card.className = "paper";
+
+          const title = document.createElement("h3");
+          title.textContent = story.title;
+
+          const author = document.createElement("p");
+          author.className = "story-meta";
+          author.textContent = "Shared by " + story.contributor;
+
+          const body = document.createElement("p");
+          body.className = "story-body";
+          body.textContent = story.body;
+
+          card.append(title, author, body);
+          storiesList.appendChild(card);
+        });
+      }
+
+      storyForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const contributor = document.getElementById("storyName").value.trim();
+        const title = document.getElementById("storyTitle").value.trim();
+        const body = document.getElementById("storyText").value.trim();
+
+        if (!contributor || !title || !body) {
+          showMessage("Please complete all three fields.", "#9b536b");
+          return;
+        }
+
+        if (
+          contributor.length > 80 ||
+          title.length > 150 ||
+          body.length > 10000
+        ) {
+          showMessage("Please shorten your name, title, or story.", "#9b536b");
+          return;
+        }
+
+        submitButton.disabled = true;
+        showMessage("Sending your story...", "#897875");
+
+        try {
+          const { error } = await supabaseClient
+            .from("stories")
+            .insert([{
+              contributor,
+              title,
+              body,
+              status: "pending"
+            }]);
+
+          if (error) {
+            console.error("Story submission failed:", error);
+            showMessage(
+              "Your story could not be submitted. Please try again.",
+              "#9b536b"
+            );
+            return;
+          }
+
+          storyForm.reset();
+          showMessage(
+            "Your story has been submitted! It will appear here after review and approval.",
+            "#815866"
+          );
+        } catch (error) {
+          console.error("Unexpected submission error:", error);
+          showMessage(
+            "Something went wrong. Please check your connection and try again.",
+            "#9b536b"
+          );
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      loadStories();
+    })();
   </script>
 </body>
-      </html>
-      
+</html>
