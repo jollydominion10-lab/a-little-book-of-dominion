@@ -63,7 +63,7 @@
     }
 
     button.secondary { background: #806e66; }
-    button.reject { background: #9b514e; }
+    button.reject, button.delete { background: #9b514e; }
 
     button:disabled {
       opacity: 0.6;
@@ -111,6 +111,14 @@
       padding-bottom: 8px;
       border-bottom: 1px solid #eadbd3;
     }
+
+    .status-label {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #f2e8e2;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -119,7 +127,10 @@
     <div class="card">
       <p>♡ A LITTLE BOOK OF DOMINION</p>
       <h1>Admin Studio</h1>
-      <p>Your private corner for looking after the memories, stories, and wishes shared by visitors.</p>
+      <p>
+        Your private corner for looking after the memories,
+        stories, and wishes shared by visitors.
+      </p>
     </div>
 
     <div class="card" id="loginCard">
@@ -152,7 +163,7 @@
 
     <div class="card" id="adminPanel" hidden>
       <h2>Welcome back ♡</h2>
-      <p>Review visitor submissions before they appear publicly.</p>
+      <p>Manage the content visitors share on your website.</p>
 
       <a class="link-button" href="index.html">View Home Page</a>
       <a class="link-button" href="memories.html">View Memories Page</a>
@@ -160,29 +171,42 @@
       <a class="link-button" href="wishes.html">View Wishes Page</a>
 
       <button type="button" id="refreshButton" class="secondary">
-        Refresh all submissions
+        Refresh all content
       </button>
 
       <p id="panelMessage" class="status" role="status" aria-live="polite"></p>
 
       <h2 class="section-heading">Pending memories</h2>
+      <p class="note">
+        Approve a memory to publish it. Reject or delete submissions
+        you do not want to keep.
+      </p>
       <div id="submissions">
-        <p>Loading submissions...</p>
+        <p>Loading memories...</p>
       </div>
 
-      <h2 class="section-heading">Pending stories</h2>
+      <h2 class="section-heading">Published memories</h2>
       <p class="note">
-        Approved stories appear on the public Stories page.
-        Rejected stories remain unpublished.
+        These photos and videos are in the public Memories gallery.
+        Deleting one removes it from the gallery.
+      </p>
+      <div id="publishedMemories">
+        <p>Loading published memories...</p>
+      </div>
+
+      <h2 class="section-heading">Stories</h2>
+      <p class="note">
+        All stories are shown here, including pending, approved,
+        and rejected stories. Only pending stories can be approved.
       </p>
       <div id="pendingStories">
         <p>Loading stories...</p>
       </div>
 
-      <h2 class="section-heading">Pending wishes</h2>
+      <h2 class="section-heading">Birthday wishes</h2>
       <p class="note">
-        Approve a birthday wish to display it on the public Wishes page.
-        Rejected wishes remain unpublished.
+        All wishes are shown here, including pending, approved,
+        and rejected wishes. Only approved wishes appear publicly.
       </p>
       <div id="pendingWishes">
         <p>Loading wishes...</p>
@@ -204,9 +228,13 @@
       const loginForm = document.getElementById("loginForm");
       const message = document.getElementById("message");
       const panelMessage = document.getElementById("panelMessage");
+
       const submissionsBox = document.getElementById("submissions");
+      const publishedMemoriesBox =
+        document.getElementById("publishedMemories");
       const pendingStoriesBox = document.getElementById("pendingStories");
       const pendingWishesBox = document.getElementById("pendingWishes");
+
       const refreshButton = document.getElementById("refreshButton");
       const signOutButton = document.getElementById("signOut");
       const signInButton = document.getElementById("signIn");
@@ -243,9 +271,11 @@
         actions.className = "actions";
 
         const approveButton = document.createElement("button");
+        approveButton.type = "button";
         approveButton.textContent = approveLabel;
 
         const rejectButton = document.createElement("button");
+        rejectButton.type = "button";
         rejectButton.textContent = rejectLabel;
         rejectButton.className = "reject";
 
@@ -262,13 +292,49 @@
         return { actions, approveButton, rejectButton };
       }
 
+      function makeDeleteButton(label, onDelete) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Delete " + label;
+        button.className = "delete";
+
+        button.addEventListener("click", async () => {
+          if (!confirm(
+            "Permanently delete this " + label +
+            "? This action cannot be undone."
+          )) {
+            return;
+          }
+
+          button.disabled = true;
+          setPanelMessage("Deleting " + label + "...");
+
+          try {
+            await onDelete();
+          } catch (error) {
+            console.error("Deletion error:", error);
+            setPanelMessage(
+              "Delete failed: " + (error.message || String(error))
+            );
+            button.disabled = false;
+          }
+        });
+
+        return button;
+      }
+
+      function makeStatusLabel(status) {
+        const label = document.createElement("span");
+        label.className = "status-label";
+        label.textContent = "Status: " + (status || "unknown");
+        return label;
+      }
+
       function isVideo(item) {
         if (item.file_type === "video") return true;
 
-        const extension = (item.file_path || "")
-          .split(".")
-          .pop()
-          .toLowerCase();
+        const path = item.file_path || item.image_path || "";
+        const extension = path.split(".").pop().toLowerCase();
 
         return ["mp4", "mov", "webm", "m4v"].includes(extension);
       }
@@ -286,12 +352,17 @@
         adminPanel.hidden = !session;
 
         if (session) {
-          await Promise.all([
-            loadSubmissions(),
-            loadPendingStories(),
-            loadPendingWishes()
-          ]);
+          await loadAllContent();
         }
+      }
+
+      async function loadAllContent() {
+        await Promise.all([
+          loadSubmissions(),
+          loadPublishedMemories(),
+          loadPendingStories(),
+          loadPendingWishes()
+        ]);
       }
 
       loginForm.addEventListener("submit", async (event) => {
@@ -332,7 +403,9 @@
 
         const { data, error } = await client
           .from("memory_submissions")
-          .select("id, created_at, contributor, caption, file_path, file_type, status")
+          .select(
+            "id, created_at, contributor, caption, file_path, file_type, status"
+          )
           .eq("status", "pending")
           .order("created_at", { ascending: false });
 
@@ -401,7 +474,7 @@
             card.appendChild(warning);
           }
 
-          const { actions, approveButton, rejectButton } = makeActions(
+          const { actions } = makeActions(
             "Approve",
             "Reject",
             (approve, reject) => approveSubmission(item, approve, reject),
@@ -409,6 +482,10 @@
           );
 
           card.appendChild(actions);
+          card.appendChild(
+            makeDeleteButton("submission", () => deleteMemorySubmission(item))
+          );
+
           submissionsBox.appendChild(card);
         }
       }
@@ -478,7 +555,7 @@
             setPanelMessage(
               "Published, but status update failed: " + updateError.message
             );
-            await loadSubmissions();
+            await loadAllContent();
             return;
           }
 
@@ -486,7 +563,7 @@
             "The " + mediaName + " was approved and published successfully! ♡"
           );
 
-          await loadSubmissions();
+          await loadAllContent();
         } catch (error) {
           console.error("Approval error:", error);
 
@@ -529,7 +606,138 @@
         await loadSubmissions();
       }
 
-      // ---------------- STORY SUBMISSIONS ----------------
+      async function deleteMemorySubmission(item) {
+        // Delete the database row first so it is not shown as pending.
+        const { error: rowError } = await client
+          .from("memory_submissions")
+          .delete()
+          .eq("id", item.id);
+
+        if (rowError) throw rowError;
+
+        const { error: fileError } = await client.storage
+          .from("memory-submissions")
+          .remove([item.file_path]);
+
+        if (fileError) {
+          setPanelMessage(
+            "Submission record deleted, but its private file could not be removed: " +
+            fileError.message
+          );
+          await loadSubmissions();
+          return;
+        }
+
+        setPanelMessage("Memory submission deleted.");
+        await loadSubmissions();
+      }
+
+      // ---------------- PUBLISHED MEMORIES ----------------
+
+      async function loadPublishedMemories() {
+        publishedMemoriesBox.replaceChildren();
+        publishedMemoriesBox.textContent = "Loading published memories...";
+
+        const { data, error } = await client
+          .from("site_content")
+          .select("id, created_at, caption, image_path")
+          .eq("content_key", "memory")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          publishedMemoriesBox.textContent =
+            "Could not load published memories: " + error.message;
+          return;
+        }
+
+        publishedMemoriesBox.replaceChildren();
+
+        if (!data || data.length === 0) {
+          publishedMemoriesBox.appendChild(
+            makeEmptyMessage("No published memories right now. ♡")
+          );
+          return;
+        }
+
+        for (const memory of data) {
+          const card = document.createElement("article");
+          card.className = "submission";
+
+          const caption = document.createElement("p");
+          caption.textContent = memory.caption || "A little memory ♡";
+
+          const date = document.createElement("p");
+          date.className = "note";
+          date.textContent = new Date(memory.created_at).toLocaleString();
+
+          card.append(caption, date);
+
+          const path = memory.image_path || "";
+          const video = /\.(mp4|mov|webm|m4v)$/i.test(path);
+
+          const { data: urlData, error: urlError } = await client.storage
+            .from("site-images")
+            .createSignedUrl(path, 300);
+
+          if (urlData && !urlError) {
+            const media = document.createElement(video ? "video" : "img");
+            media.src = urlData.signedUrl;
+            media.style.width = "100%";
+
+            if (video) {
+              media.controls = true;
+              media.playsInline = true;
+            } else {
+              media.alt = caption.textContent;
+            }
+
+            card.appendChild(media);
+          } else {
+            const warning = document.createElement("p");
+            warning.textContent =
+              "Preview unavailable: " +
+              (urlError ? urlError.message : "Could not create media URL.");
+            card.appendChild(warning);
+          }
+
+          card.appendChild(
+            makeDeleteButton("published memory", () =>
+              deletePublishedMemory(memory)
+            )
+          );
+
+          publishedMemoriesBox.appendChild(card);
+        }
+      }
+
+      async function deletePublishedMemory(memory) {
+        // Remove the gallery entry first.
+        const { error: rowError } = await client
+          .from("site_content")
+          .delete()
+          .eq("id", memory.id);
+
+        if (rowError) throw rowError;
+
+        // Remove its file from the public bucket.
+        const { error: fileError } = await client.storage
+          .from("site-images")
+          .remove([memory.image_path]);
+
+        if (fileError) {
+          setPanelMessage(
+            "The memory was removed from the gallery, but its file could not be deleted: " +
+            fileError.message
+          );
+          await loadPublishedMemories();
+          return;
+        }
+
+        setPanelMessage("Published memory deleted from the gallery.");
+        await loadPublishedMemories();
+      }
+
+      // ---------------- STORIES ----------------
 
       async function loadPendingStories() {
         pendingStoriesBox.replaceChildren();
@@ -537,18 +745,13 @@
 
         const { data, error } = await client
           .from("stories")
-          .select("id, created_at, contributor, title, body")
-          .eq("status", "pending")
+          .select("id, created_at, contributor, title, body, status")
           .order("created_at", { ascending: false });
 
         if (error) {
-          pendingStoriesBox.replaceChildren();
-          pendingStoriesBox.appendChild(
-            makeEmptyMessage(
-              "Could not load stories. Check the Stories table permissions. " +
-              error.message
-            )
-          );
+          pendingStoriesBox.textContent =
+            "Could not load stories. Check the Stories table permissions. " +
+            error.message;
           return;
         }
 
@@ -556,7 +759,7 @@
 
         if (!data || data.length === 0) {
           pendingStoriesBox.appendChild(
-            makeEmptyMessage("No pending stories right now. ♡")
+            makeEmptyMessage("No stories have been submitted yet. ♡")
           );
           return;
         }
@@ -566,36 +769,45 @@
           card.className = "submission";
 
           const title = document.createElement("h3");
-          title.textContent = story.title;
+          title.textContent = story.title || "Untitled story";
 
           const author = document.createElement("p");
-          author.textContent = "From: " + story.contributor;
+          author.textContent =
+            "From: " + (story.contributor || "Anonymous visitor");
 
           const date = document.createElement("p");
           date.className = "note";
           date.textContent = new Date(story.created_at).toLocaleString();
 
+          const status = makeStatusLabel(story.status);
+
           const body = document.createElement("p");
           body.style.whiteSpace = "pre-wrap";
-          body.textContent = story.body;
+          body.textContent = story.body || "";
 
-          const { actions, approveButton, rejectButton } = makeActions(
-            "Approve",
-            "Reject",
-            (approve, reject) =>
-              setStoryStatus(story, "approved", approve, reject),
-            (approve, reject) =>
-              setStoryStatus(story, "rejected", approve, reject)
+          card.append(title, author, date, status, body);
+
+          if (story.status === "pending") {
+            const { actions } = makeActions(
+              "Approve",
+              "Reject",
+              (approve, reject) =>
+                setStoryStatus(story, "approved", approve, reject),
+              (approve, reject) =>
+                setStoryStatus(story, "rejected", approve, reject)
+            );
+            card.appendChild(actions);
+          }
+
+          card.appendChild(
+            makeDeleteButton("story", () => deleteStory(story))
           );
 
-          card.append(title, author, date, body, actions);
           pendingStoriesBox.appendChild(card);
         }
       }
 
-      async function setStoryStatus(
-        story, status, approveButton, rejectButton
-      ) {
+      async function setStoryStatus(story, status, approveButton, rejectButton) {
         const action = status === "approved" ? "approve" : "reject";
 
         if (!confirm("Are you sure you want to " + action + " this story?")) {
@@ -628,7 +840,19 @@
         await loadPendingStories();
       }
 
-      // ---------------- WISH SUBMISSIONS ----------------
+      async function deleteStory(story) {
+        const { error } = await client
+          .from("stories")
+          .delete()
+          .eq("id", story.id);
+
+        if (error) throw error;
+
+        setPanelMessage("Story deleted.");
+        await loadPendingStories();
+      }
+
+      // ---------------- BIRTHDAY WISHES ----------------
 
       async function loadPendingWishes() {
         pendingWishesBox.replaceChildren();
@@ -636,18 +860,13 @@
 
         const { data, error } = await client
           .from("wishes")
-          .select("id, created_at, contributor, message")
-          .eq("status", "pending")
+          .select("id, created_at, contributor, message, status")
           .order("created_at", { ascending: false });
 
         if (error) {
-          pendingWishesBox.replaceChildren();
-          pendingWishesBox.appendChild(
-            makeEmptyMessage(
-              "Could not load wishes. Check the wishes table and its permissions. " +
-              error.message
-            )
-          );
+          pendingWishesBox.textContent =
+            "Could not load wishes. Check the wishes table and its permissions. " +
+            error.message;
           return;
         }
 
@@ -655,7 +874,7 @@
 
         if (!data || data.length === 0) {
           pendingWishesBox.appendChild(
-            makeEmptyMessage("No pending wishes right now. ♡")
+            makeEmptyMessage("No birthday wishes have been submitted yet. ♡")
           );
           return;
         }
@@ -665,33 +884,42 @@
           card.className = "submission";
 
           const title = document.createElement("h3");
-          title.textContent = "♡ " + (wish.contributor || "Anonymous visitor");
+          title.textContent =
+            "♡ " + (wish.contributor || "Anonymous visitor");
 
           const date = document.createElement("p");
           date.className = "note";
           date.textContent = new Date(wish.created_at).toLocaleString();
 
+          const status = makeStatusLabel(wish.status);
+
           const body = document.createElement("p");
           body.style.whiteSpace = "pre-wrap";
-          body.textContent = wish.message;
+          body.textContent = wish.message || "";
 
-          const { actions, approveButton, rejectButton } = makeActions(
-            "Approve",
-            "Reject",
-            (approve, reject) =>
-              setWishStatus(wish, "approved", approve, reject),
-            (approve, reject) =>
-              setWishStatus(wish, "rejected", approve, reject)
+          card.append(title, date, status, body);
+
+          if (wish.status === "pending") {
+            const { actions } = makeActions(
+              "Approve",
+              "Reject",
+              (approve, reject) =>
+                setWishStatus(wish, "approved", approve, reject),
+              (approve, reject) =>
+                setWishStatus(wish, "rejected", approve, reject)
+            );
+            card.appendChild(actions);
+          }
+
+          card.appendChild(
+            makeDeleteButton("birthday wish", () => deleteWish(wish))
           );
 
-          card.append(title, date, body, actions);
           pendingWishesBox.appendChild(card);
         }
       }
 
-      async function setWishStatus(
-        wish, status, approveButton, rejectButton
-      ) {
+      async function setWishStatus(wish, status, approveButton, rejectButton) {
         const action = status === "approved" ? "approve" : "reject";
 
         if (!confirm("Are you sure you want to " + action + " this wish?")) {
@@ -734,20 +962,27 @@
         await loadPendingWishes();
       }
 
-      // ---------------- REFRESH ALL QUEUES ----------------
+      async function deleteWish(wish) {
+        const { error } = await client
+          .from("wishes")
+          .delete()
+          .eq("id", wish.id);
+
+        if (error) throw error;
+
+        setPanelMessage("Birthday wish deleted.");
+        await loadPendingWishes();
+      }
+
+      // ---------------- REFRESH ALL CONTENT ----------------
 
       refreshButton.addEventListener("click", async () => {
         refreshButton.disabled = true;
-        setPanelMessage("Refreshing submissions...");
+        setPanelMessage("Refreshing all content...");
 
         try {
-          await Promise.all([
-            loadSubmissions(),
-            loadPendingStories(),
-            loadPendingWishes()
-          ]);
-
-          setPanelMessage("All submission queues refreshed.");
+          await loadAllContent();
+          setPanelMessage("All content refreshed. ♡");
         } finally {
           refreshButton.disabled = false;
         }
