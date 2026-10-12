@@ -426,9 +426,16 @@
 
   <script>
     const client = window.supabase.createClient(
-      window.SUPABASE_URL,
-      window.SUPABASE_PUBLISHABLE_KEY
-    );
+  window.SUPABASE_URL,
+  window.SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  }
+);
 
     const gallery = document.getElementById("memoryGallery");
     const memoryForm = document.getElementById("memoryForm");
